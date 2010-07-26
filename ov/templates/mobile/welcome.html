@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>iPhone Navigation</title>
+<meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+<style type="text/css" media="screen">@import "iphonenav.css";</style>
+<script type="application/x-javascript" src="iphonenav.js"></script>
+</head>
+
+<body>
+    <h1 id="pageTitle"></h1>
+    <a id="homeButton" class="button" href="#albums">Albums</a>
+    <a class="button" href="#searchForm">Search</a>
+    
+    <ul id="albums" title="Albums" selected="true">
+        <li><a href="#TheBeatles">The Beatles</a></li>
+        <li><a href="#BelleSebastian">Belle & Sebastian</a></li>
+        <li><a href="#CrowdedHouse">Crowded House</a></li>
+        <li><a href="#JohnMayer">John Mayer</a></li>
+        <li><a href="#Zero7">Zero 7</a></li>
+    </ul>
+    <ul id="TheBeatles" title="The Beatles">
+        <li><a href="#songs">Abbey Road</a></li>
+        <li><a href="#songs">Help!</a></li>
+        <li><a href="#songs">Rubber Soul</a></li>
+        <li><a href="#songs">Sgt. Pepper's</a></li>
+        <li><a href="#songs">White Album</a></li>
+    </ul>
+    <ul id="BelleSebastian" title="Belle & Sebastian">
+        <li><a href="#songs">Boy With The Arab Strap</a></li>
+        <li><a href="#songs">Dear Catastrophe Waitress</a></li>
+        <li><a href="#songs">The Life Pursuit</a></li>
+    </ul>
+    <ul id="CrowdedHouse" title="Crowded House">
+        <li><a href="#songs">Crowded House</a></li>
+        <li><a href="#songs">Temple of Low Men</a></li>
+        <li><a href="#songs">Together Alone</a></li>
+        <li><a href="#songs">Woodface</a></li>
+    </ul>
+    <ul id="JohnMayer" title="John Mayer">
+        <li><a href="#songs">Continuum</a></li>
+        <li><a href="#songs">Heavier Things</a></li>
+        <li><a href="#songs">Room for Squares</a></li>
+    </ul>
+    <ul id="Zero7" title="Zero 7">
+        <li><a href="#songs">The Garden</a></li>
+        <li><a href="#songs">Simple Things</a></li>
+        <li><a href="#songs">When it Falls</a></li>
+    </ul>
+    <ul id="songs" title="Songs">
+        <li><a href="#player">Song 1</a></li>
+        <li><a href="#player">Song 2</a></li>
+        <li><a href="#player">Song 3</a></li>
+        <li><a href="#player">Song 4</a></li>
+        <li><a href="#player">Song 5</a></li>
+        <li><a href="#player">Song 6</a></li>
+        <li><a href="#player">Song 7</a></li>
+        <li><a href="#player">Song 8</a></li>
+        <li><a href="#player">Song 9</a></li>
+        <li><a href="#player">Song 10</a></li>
+        <li><a href="#player">Song 11</a></li>
+    </ul>
+    <div id="player" class="panel" title="Now Playing">
+        <h2>If this weren't just a demo, you might be hearing a song...</h2>
+    </div>
+    <div id="searchResults" class="panel" title="Search">
+        <h2>Search results go here...</h2>
+    </div>
+    <form id="searchForm" class="dialog" action="#searchResults">
+        <fieldset>
+            <h1>Music Search</h1>
+            <a class="button toolButton goButton" href="#searchResults">Search</a>
+            
+            <label>Artist:</label>
+            <input type="text"/>
+            <label>Song:</label>
+            <input type="text"/>
+        </fieldset>
+    </form>
+</body>
+</html>
