@@ -34,7 +34,7 @@ Represents the dictionary
 class Context(models.Model):
     label = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True, null=True)
-    uri = models.URLField(verify_exists=False)
+    uri = models.URLField(verify_exists=False, db_index=True, unique=True)
     ns = models.CharField(max_length=10)
     type = models.CharField(max_length=3, choices=CONTEXT_TYPE, default='tag')
     lang = models.CharField(max_length=10, default='en') 
@@ -83,7 +83,79 @@ class ContextAdmin(admin.ModelAdmin):
                 'description': ("Additional meta information"),
             }),
     )
-            
+
+# --------------------- URI -----------------------------    
+
+class URIManager(models.Manager):
+    def search(self, key):
+        results = [] #Publisher.objects.filter(name__icontains=key) | Publisher.objects.filter(address__icontains=key)
+        print "Found %d results for %s" % (len(results), key)
+        return results
+
+    """
+    Lookup manifests by isbn
+    """   
+    def lookup(self, value):
+        try:
+            result = URI.objects.get(uri=value)
+        except Exception:
+            result = None
+        return result
+    
+"""
+Represents an arbitrary URI
+"""    
+class URI(models.Model):
+    uri = models.URLField(verify_exists=False, db_index=True, unique=True)
+    objects = URIManager()
+    
+    """
+    to-string representation
+    """
+    def __unicode__(self):
+        return "<%s>" % self.uri
+
+              
+class URIAdmin(admin.ModelAdmin):
+    pass
+
+# --------------------- Predicate -----------------------------    
+
+class PredicateManager(models.Manager):
+    def search(self, key):
+        results = [] #Publisher.objects.filter(name__icontains=key) | Publisher.objects.filter(address__icontains=key)
+        print "Found %d results for %s" % (len(results), key)
+        return results
+
+    """
+    Lookup manifests by isbn
+    """   
+    def lookup(self, value):
+        try:
+            result = Predicate.objects.get(uri=value)
+        except Exception:
+            result = None
+        return result
+
+"""
+Represents an arbitrary URI
+"""    
+class Predicate(models.Model):
+    uri = models.URLField(verify_exists=True, db_index=True, unique=True)
+    objects = PredicateManager()
+
+    """
+    to-string representation
+    """
+    def __unicode__(self):
+        return "<%s>" % self.uri
+
+
+class URIAdmin(admin.ModelAdmin):
+    pass
+
+
+
 
 # --------------------- entry -----------------------------    
 
@@ -97,11 +169,11 @@ PART_OF_SPEECH = (
 )
 
 ENTRY_RELATION_TYPES = (
-    ('hyponyms', 'hyponyms'),
-    ('hypernyms', 'hypernyms'),
-    ('antonyms', 'antonyms'),
-    ('synonyms', 'synonyms'),
-    ('meanings', 'meanings'),
+    ('hyponym', 'hyponym'),
+    ('hypernym', 'hypernym'),
+    ('antonym', 'antonym'),
+    ('synonym', 'synonym'),
+    ('meaning', 'meaning'),
     ('meronymOf', 'meronym of'),
     ('partMeronymOf', 'part meronym of'),
     ('similarTo', 'similar to')
@@ -136,10 +208,10 @@ class EntryManager(models.Manager):
 Represents the dictionary entry
 """    
 class Entry(models.Model):
-    label = models.CharField(max_length=100, null=True)
+    label = models.CharField(max_length=255, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
-    uri = models.URLField(verify_exists=False)
-    context = models.ForeignKey(Context)
+    uri = models.URLField(verify_exists=False, db_index=True, unique=True)
+    context = models.ForeignKey(Context, null=True)
     is_root = models.BooleanField(default=False)
     # -- thesaurus --
     relations = models.ManyToManyField('self', related_name='relation', symmetrical=False, through='EntryReference', blank=True, null=True)
@@ -158,9 +230,10 @@ class Entry(models.Model):
     # -- taxonomy --
     parent = models.ForeignKey('self', related_name='childOf', blank=True, null=True)
     #
-    # additional_properties ?
+    triples = models.ManyToManyField(Predicate, related_name='triples', symmetrical=False, through='Triple', blank=True, null=True) 
+    types = models.ManyToManyField(URI, related_name='types', symmetrical=False, blank=True, null=True)
     #
-    objects = ContextManager()
+    objects = EntryManager()
 
     """
     to-string representation
@@ -219,6 +292,16 @@ class ClassificationReference(models.Model):
     object = models.ForeignKey(Entry, related_name='class_object')
     type = models.CharField(max_length=10, choices=CLASSIFICATION_TYPES)
 
+"""
+M2M relation based on triples concept
+"""
+class Triple(models.Model):
+    subject = models.ForeignKey(Entry, related_name='triple_subject')
+    predicate = models.ForeignKey(Predicate, related_name='triple_predicate')
+    object = models.ForeignKey(URI, related_name='triple_object', null=True, blank=True)
+    literal = models.CharField(max_length=255, null=True, blank=True)
+    literal_type = models.ForeignKey(URI, related_name='triple_literal_type', null=True, blank=True)
+    literal_lang = models.CharField(max_length=10, null=True, blank=True)
 
 
 class EntryAdmin(admin.ModelAdmin):
