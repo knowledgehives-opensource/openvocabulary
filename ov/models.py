@@ -32,13 +32,13 @@ class ContextManager(models.Manager):
 Represents the dictionary
 """    
 class Context(models.Model):
-    label = models.CharField(max_length=100)
-    description = models.CharField(max_length=255, blank=True, null=True)
-    uri = models.URLField(verify_exists=False, db_index=True, unique=True)
+    label = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    uri = models.URLField(max_length=255, verify_exists=False, db_index=True, unique=True)
     ns = models.CharField(max_length=10)
     type = models.CharField(max_length=3, choices=CONTEXT_TYPE, default='tag')
     lang = models.CharField(max_length=10, default='en') 
-    term_uri_pattern = models.CharField(max_length=255, blank=True, null=True, verbose_name="uri pattern")
+    term_uri_pattern = models.CharField(max_length=500, blank=True, null=True, verbose_name="uri pattern")
     # additional_properties
     # tree_properties
     objects = ContextManager()
@@ -106,7 +106,7 @@ class URIManager(models.Manager):
 Represents an arbitrary URI
 """    
 class URI(models.Model):
-    uri = models.URLField(verify_exists=False, db_index=True, unique=True)
+    uri = models.URLField(max_length=255, verify_exists=False, db_index=True, unique=True)
     objects = URIManager()
     
     """
@@ -141,7 +141,7 @@ class PredicateManager(models.Manager):
 Represents an arbitrary URI
 """    
 class Predicate(models.Model):
-    uri = models.URLField(verify_exists=True, db_index=True, unique=True)
+    uri = models.URLField(max_length=255, verify_exists=True, db_index=True, unique=True)
     objects = PredicateManager()
 
     """
@@ -176,14 +176,24 @@ ENTRY_RELATION_TYPES = (
     ('meaning', 'meaning'),
     ('meronymOf', 'meronym of'),
     ('partMeronymOf', 'part meronym of'),
-    ('similarTo', 'similar to')
+    ('similarTo', 'similar to'),
+    ('adverbPertainsTo', 'adverb pertains to'),
+    ('adjectivePertainsTo', 'adjective pertains to'),
+    ('attribute', 'attribute'),
+    ('causes', 'causes'),
+    ('derivationallyRelated', 'derivationally related'),
+    ('entails', 'entails'),
+    ('participleOf', 'participle of'),
+    ('sameVerbGroupAs', 'same verb group as'),
+    ('substanceMeronymOf', 'substance meronym of'),
+    ('memberMeronymOf', 'member meronym of'),
+    ('classifiedByRegion', 'classified by region'),
+    ('classifiedByTopic', 'classified by topic'),
+    ('classifiedByUsage', 'classified by usage'),
 )
 
 CLASSIFICATION_TYPES = (
     ('none', ''),
-    ('region', 'region'),
-    ('topic', 'topic'),
-    ('usage', 'usage'),
 )
 
 
@@ -209,24 +219,26 @@ Represents the dictionary entry
 """    
 class Entry(models.Model):
     label = models.CharField(max_length=255, null=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
-    uri = models.URLField(verify_exists=False, db_index=True, unique=True)
+    description = models.TextField(blank=True, null=True)
+    uri = models.URLField(max_length=255, verify_exists=False, db_index=True, unique=True)
     context = models.ForeignKey(Context, null=True)
     is_root = models.BooleanField(default=False)
     # -- thesaurus --
     relations = models.ManyToManyField('self', related_name='relation', symmetrical=False, through='EntryReference', blank=True, null=True)
+    meanings  = models.ManyToManyField('self', related_name='meaning', symmetrical=False, blank=True, null=True)
+    frame = models.CharField(max_length=255, blank=True, null=True)
     # -- word --
-    lexical_form = models.CharField(max_length=100, blank=True, null=True)
+    lexical_form = models.CharField(max_length=255, blank=True, null=True)
     # -- word sense --
     in_synset = models.ForeignKey('self', related_name='inSynset', blank=True, null=True)
     tag_count = models.IntegerField(blank=True, null=True) #the tagcount value for word net
     words = models.ManyToManyField('self', related_name='word', symmetrical=False, blank=True, null=True)
+    type_tag = models.CharField(max_length=50, blank=True, null=True)
     # -- synset --
-    gloss = models.CharField(max_length=255, blank=True, null=True)
-    synset_id = models.IntegerField(null=True)
+    gloss = models.TextField(blank=True, null=True)
+    synset_id = models.CharField(max_length=100, blank=True, null=True)
     pos = models.CharField(max_length=10, choices=PART_OF_SPEECH) #part of speech
     word_senses = models.ManyToManyField('self', related_name='wordSense', symmetrical=False) # --> containsWordSense, <-- inWordSense
-    classified_by = models.ManyToManyField('self', related_name='classifiedBy', symmetrical=False, through='ClassificationReference', blank=True, null=True)
     # -- taxonomy --
     parent = models.ForeignKey('self', related_name='childOf', blank=True, null=True)
     #
@@ -282,15 +294,7 @@ Allows to define multiple references between dictionary entries
 class EntryReference(models.Model):
     subject = models.ForeignKey(Entry, related_name='ref_subject')
     object = models.ForeignKey(Entry, related_name='ref_object')
-    relation = models.CharField(max_length=15, choices=ENTRY_RELATION_TYPES)
-
-"""
-Allows to define multiple references of classifiedBy 
-"""
-class ClassificationReference(models.Model):
-    subject = models.ForeignKey(Entry, related_name='class_subject')
-    object = models.ForeignKey(Entry, related_name='class_object')
-    type = models.CharField(max_length=10, choices=CLASSIFICATION_TYPES)
+    relation = models.CharField(max_length=30, choices=ENTRY_RELATION_TYPES)
 
 """
 M2M relation based on triples concept
@@ -299,7 +303,7 @@ class Triple(models.Model):
     subject = models.ForeignKey(Entry, related_name='triple_subject')
     predicate = models.ForeignKey(Predicate, related_name='triple_predicate')
     object = models.ForeignKey(URI, related_name='triple_object', null=True, blank=True)
-    literal = models.CharField(max_length=255, null=True, blank=True)
+    literal = models.CharField(max_length=1000, null=True, blank=True)
     literal_type = models.ForeignKey(URI, related_name='triple_literal_type', null=True, blank=True)
     literal_lang = models.CharField(max_length=10, null=True, blank=True)
 

@@ -9,10 +9,13 @@ Copyright (c)  Knowledge Hives sp. z o.o.. All rights reserved.
 """
 
 import sys
+import gc
 import getopt
 
 from django.core.management import setup_environ
 import settings
+
+settings.DEBUG = False
 
 setup_environ(settings)
 
@@ -55,6 +58,7 @@ def main(argv=None):
                 file = value
 
         if file:
+            gc.enable()
             read_in(file)
         else:
             raise Usage(help_message)
