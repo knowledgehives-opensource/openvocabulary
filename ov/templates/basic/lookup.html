@@ -1,0 +1,16 @@
+{% extends "basic/template.html" %}
+
+{% block page_title %}OpenVocabulary.info | Browse Vocabularies{% endblock %}
+
+{% block page_content %}
+	The best way to start browsing through the OpenVocabulary repository is to start with one of <a href="/vocabularies/" rel="self" title="Vocabularies">vocabularies</a>.
+{% endblock %}
+
+
+{% block page_breadcrumbs %}
+	<ul>
+		<li><a href="/">Welcome</a>&nbsp;>&nbsp;</li>
+		<li><a href="/vocabularies/lookup">Browse</a>&nbsp;>&nbsp;</li>
+		{# add current lookup #}
+	</ul>
+{% endblock %}

@@ -94,6 +94,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.admin',
     'ov_django.ov',
+#    'haystack',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -103,6 +104,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
 )
 
+# ----------------- haystack configuration --------------
+
+HAYSTACK_SITECONF = 'ov_django.search_sites'
+HAYSTACK_SEARCH_ENGINE = 'whoosh'
+HAYSTACK_WHOOSH_PATH = os.path.join(os.path.dirname(__file__), 'index').replace('\\','/'),
+
 # ---------------- idbuk configuration ------------------
 
 BASE_URL_PATH = "http://localhost:8001/"
+BASE_OV_PATH = "http://www.openvocabulary.info/"

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+    "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+{% load extras %}
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      version="XHTML+RDFa 1.0"
+      {% autoescape off %}{{ namespaces|render_namespaces }}{% endautoescape %}
+	  xml:lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="robots" content="all" />
+		<title>{% block page_title %}{% endblock %}</title>
+		<link rel="stylesheet" type="text/css" media="screen" href="/static/themes/caribou/styles.css" />
+		<!--[if IE 6]><link rel="stylesheet" type="text/css" media="screen" href="/static/themes/caribou/css/ie6.css" /><![endif]-->
+		<link rel="stylesheet" type="text/css" media="screen" href="/static/themes/caribou/colourtag.css" />
+		<link rel="stylesheet" type="text/css" media="print" href="/static/themes/caribou/print.css" />
+		<link rel="stylesheet" type="text/css" media="handheld" href="/static/themes/caribou/handheld.css" />
+		<!--[if IE 6]><style type="text/css" media="screen">body {behavior: url(/static/themes/caribou/csshover.htc);}</style><![endif]-->
+		<link rel="stylesheet" type="text/css" media="screen" href="/static/themes/caribou/css/banner/curve_solid.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="/static/themes/caribou/css/logo_position/right.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="/static/themes/caribou/css/sidebar/sidebar_right.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="/static/themes/caribou/css/icons/black.css" />
+		<script type="text/javascript" src="/static/themes/caribou/javascript.js"></script>
+		<!--[if IE 6]><script type="text/javascript" charset="utf-8">	var blankSrc = "/static/themes/caribou/png/blank.gif";</script>	
+		<style type="text/css">	img { behavior:	url("/static/themes/caribou/png/pngbehavior.htc"); }</style><![endif]-->
+	</head>
+	{% block page_header %}{% endblock %}
+<body>
+<div id="bar"></div>
+<div id="container"><!-- Start container -->
+	<div id="pageHeader"><!-- Start page header -->
+		<div id="navcontainer"><!-- Start Navigation -->
+			<ul>
+				<li><a href="/" rel="self" id="{{ state|check_if_selected:'welcome' }}">Welcome</a></li>
+				<li><a href="/vocabularies/" rel="self" id="{{ state|check_if_selected:'vocabularies' }}">Vocabularies</a></li>
+				<li><a href="/vocabularies/lookup" rel="self" id="{{ state|check_if_selected:'lookup' }}">Browse</a></li>
+				<li><a href="/vocabularies/search" rel="self" id="{{ state|check_if_selected:'search' }}">Search</a></li>
+				{# <li><a href="/sources" rel="self" id="{{ state|check_if_selected:'sources' }}">Sources</a></li> #}
+			</ul>
+		</div><!-- End navigation --> 
+		<div id="title">
+			<div id="logo"><img src="/static/images/ovlogo.png" width="181" height="130" alt="Site logo"/></div>
+			<h1>OpenVocabulary</h1>
+			<h2>Linking Public Vocabularies</h2>
+			<div id="overlay_swirls"><img src="/static/themes/caribou/images/header_swirls.png" alt="" style="width: 900px; height: 150px;" /></div>
+			<div id="overlay_stripes_glow"><img src="/static/themes/caribou/images/header_stripes_glow.png" alt="" style="width: 900px; height: 150px;" /></div>
+			<div id="overlay_stripes_solid"><img src="/static/themes/caribou/images/header_stripes_solid.png" alt="" style="width: 900px; height: 150px;" /></div>
+			<div id="overlay_curve_solid"><img src="/static/themes/caribou/images/header_curve_solid.png" alt="" style="width: 900px; height: 150px;" /></div>
+		</div>
+		<div id="background"><img src="/static/themes/caribou/images/header_bg.png" alt="" style="width: 914px; height: 197px;" /></div>
+	</div><!-- End page header -->
+	
+	<div id="contentContainer"><!-- Start main content wrapper -->
+		<div id="content"><!-- Start content -->
+			<div class="contentSpacer"></div><!-- this makes sure the content is long enough for the design -->
+			{% block page_content %}{% endblock %}
+			<div class="clearer"></div>
+		</div><!-- End content -->
+		
+	</div><!-- End main content wrapper -->
+	
+	<div id="sidebarContainer"><!-- Start Sidebar wrapper -->
+		<div id="sidebar"><!-- Start sidebar content -->
+		<div class="sideHeader"></div><!-- Sidebar header --> 
+			<span style="font:10px Monaco; "><form class="search" id="search_form" action="/vocabularies/search" method="get"><br />	<input type="search" id="proj-search" name="q" size="15" accesskey="f" autosave="at.search" results="5" placeholder="Search" value="" /><button type="submit">search</button><br />	</form></span><!-- sidebar content you enter in the page inspector -->
+			{% block page_sidebar %}{% endblock %}
+			 <!-- sidebar content such as the blog archive links -->
+		</div><!-- End sidebar content -->
+	</div><!-- End sidebar wrapper -->
+	
+	<div class="clearer"></div>
+	
+</div><!-- End container -->
+
+<div class="clearer"></div>
+<div id="footer"><!-- Start Footer -->
+	<p>&copy; 2010 <a href="http://www.knowledgehives.com/">Knowledge Hives</a> |  <a href="#" id="rw_email_contact">Contact Us</a><script type="text/javascript">var _rwObsfuscatedHref0 = "mai";var _rwObsfuscatedHref1 = "lto";var _rwObsfuscatedHref2 = ":op";var _rwObsfuscatedHref3 = "env";var _rwObsfuscatedHref4 = "oca";var _rwObsfuscatedHref5 = "bul";var _rwObsfuscatedHref6 = "ary";var _rwObsfuscatedHref7 = "@kn";var _rwObsfuscatedHref8 = "owl";var _rwObsfuscatedHref9 = "edg";var _rwObsfuscatedHref10 = "ehi";var _rwObsfuscatedHref11 = "ves";var _rwObsfuscatedHref12 = ".co";var _rwObsfuscatedHref13 = "m";var _rwObsfuscatedHref = _rwObsfuscatedHref0+_rwObsfuscatedHref1+_rwObsfuscatedHref2+_rwObsfuscatedHref3+_rwObsfuscatedHref4+_rwObsfuscatedHref5+_rwObsfuscatedHref6+_rwObsfuscatedHref7+_rwObsfuscatedHref8+_rwObsfuscatedHref9+_rwObsfuscatedHref10+_rwObsfuscatedHref11+_rwObsfuscatedHref12+_rwObsfuscatedHref13; document.getElementById('rw_email_contact').href = _rwObsfuscatedHref;</script></p>
+	
+	<div id="breadcrumbcontainer"><!-- Start the breadcrumb wrapper -->
+		{% block page_breadcrumbs %}{% endblock %}
+	</div><!-- End breadcrumb -->
+	
+</div><!-- End Footer -->
+<!-- Start Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-5357587-3");
+pageTracker._trackPageview();
+} catch(err) {}</script><!-- End Google Analytics -->
+</body>
+</html>

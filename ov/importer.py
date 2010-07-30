@@ -166,7 +166,30 @@ class TriplesParser:
         'http://www.w3.org/2000/01/rdf-schema#comment',
         #<http://www.w3.org/2000/01/rdf-schema#label>
     ]
-
+    
+    """
+    216	nadużyw.
+    396	poet.
+    549	oficj.
+    887	specjalist.
+    957	wulg.
+    1155	żart.
+    2422	książk.
+    3128	przestarz.
+    10225	pot.
+    """
+    _word_types = {
+        u'nadużyw' : 'overused',
+        u'poet' : 'poetic', 
+        u'oficj' : 'official', 
+        u'specjalist' : 'specialized', 
+        u'wulg' : 'vulgarism',
+        u'żart' : 'facetiously', 
+        u'książk' : 'literary', 
+        u'przestarz' : 'obsolete',
+        u'pot' : 'colloquial', 
+    }
+    
     """
     Pattern for processing triples
     """
@@ -185,7 +208,7 @@ class TriplesParser:
     """
     _type_tag = re.compile(r"""(?P<label>.+) #core label 
                             \s+\(
-                            (?P<type>.+)     #type of word
+                            (?P<type>\S+)[.] #type of word
                             \)
                             """, re.X)
 
@@ -237,14 +260,13 @@ class TriplesParser:
             # get subject Entry
             if 'subject' in gdict and gdict['subject']: 
                 dsubj = self._encode(gdict['subject'])
-                entry = Entry.objects.lookup(dsubj)
+                entry, created = Entry.objects.get_or_create(uri=dsubj)
 
-                if not entry:
-                    entry = Entry(uri=dsubj)
+                if created:
                     try:
                         entry.save()
                     except Exception, e:
-                        print "[ERROR] cannot create uri: %s | %s" % (gdict['subject'], len(dsubj))
+                        print "[ERROR] cannot create subject entry: %s | %s" % (gdict['subject'], len(dsubj))
                         raise e
 
             processed = False
@@ -310,8 +332,9 @@ class TriplesParser:
             oentry.parent = entry
             oentry.save()
         
-            reference = EntryReference(subject=entry, object=oentry, relation='hyponym')
-            reference.save()
+            reference, created = EntryReference.objects.get_or_create(subject=entry, object=oentry, relation='hyponym')
+            if created:
+                reference.save()
         
             return True
             
@@ -328,8 +351,9 @@ class TriplesParser:
         if oentry:
             entry.parent = oentry
 
-            reference = EntryReference(subject=entry, object=oentry, relation='hypernym')
-            reference.save()
+            reference, created = EntryReference.objects.get_or_create(subject=entry, object=oentry, relation='hypernym')
+            if created:
+                reference.save()
 
             return True
            
@@ -341,8 +365,9 @@ class TriplesParser:
     sets broader relation for given entry
     """
     def add_relation(self, entry, relation, oentry):
-        reference = EntryReference(subject=entry, object=oentry, relation=relation)
-        reference.save()
+        reference, created = EntryReference.objects.get_or_create(subject=entry, object=oentry, relation=relation)
+        if created:
+            reference.save()
         return True
     
 
@@ -384,11 +409,10 @@ class TriplesParser:
                 m = self._type_tag.match(literal)
                 if m:
                     litdict = m.groupdict()
-                    entry.label = litdict['label']
-                    if 'type' in litdict and litdict['type']:
-                        entry.type_tag = litdict['type']
-                        
-                    return True
+                    if 'type' in litdict and litdict['type'] in self._word_types:
+                        entry.type_tag = self._word_types[litdict['type']]
+                        entry.label = litdict['label']
+                        return True
             # fallback to normal literal predicate set
             setattr(entry, pred, literal)
             return True
@@ -406,9 +430,8 @@ class TriplesParser:
         utype = None
         
         if 'pred' in obj and obj['pred']:
-            upred = Predicate.objects.lookup(obj['pred'])
-            if not upred:
-                upred = Predicate(uri=obj['pred'])
+            upred, created = Predicate.objects.get_or_create(uri=obj['pred'])
+            if created:
                 upred.save()
         else:
             print "[WARNING] cannot set triple without proper predicate"
@@ -418,9 +441,8 @@ class TriplesParser:
             uobj = self._get_uri(obj)
         
         if 'type' in obj and obj['type']:
-            utype = URI.objects.lookup(obj['type'])
-            if not utype:
-                utype = URI(uri=obj['type'])
+            utype, created = URI.objects.get_or_create(uri=obj['type'])
+            if created:
                 utype.save()
         
         triple = Triple(subject=entry,

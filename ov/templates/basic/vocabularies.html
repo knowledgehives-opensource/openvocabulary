@@ -1,0 +1,67 @@
+{% extends "basic/template.html" %}
+{% load extras %}
+
+{% block page_title %}OpenVocabulary.info | Vocabularies{% endblock %}
+
+{% block page_content %}
+	{% for ctx in results  %}
+	<div id="unique-entry-id-{{ forloop.counter0 }}" class="blog-entry">
+		<h1 class="blog-entry-title"><a href="/vocabularies?uri={{ ctx.uri }}" class="blog-permalink">{{ ctx.label }}</a></h1>
+		<div class="blog-entry-date">Type: <span class="blog-entry-category"><a href="/vocabularies?type={{ ctx.type }}">{{ ctx.type|expand_context_type }}</a></span></div>
+		<div class="blog-entry-date">Language: <span class="blog-entry-category"><a href="/vocabularies?lang={{ ctx.lang }}">{{ ctx.lang }}</a></span></div>
+		<p class="blog-entry-tags">Tags: 
+			{% for tag in ctx.tags.all  %}
+			<a href="/vocabularies?tag={{ tag.label }}" title="Filter by tag: {{ tag.label }}" rel="tag">{{ tag.label }}</a>{% if not forloop.last %}, {% endif %}
+			{% endfor %}
+		</p>
+		<div class="blog-entry-body">
+			{% autoescape off %}{{ ctx.description }}{% endautoescape %}
+			{% if ctx.get_root_entries %}
+				<p>
+				{% if ctx.type == 'tez' %}
+					Best way to browse {{ ctx.label }} is by searching for concepts. Here are some examples (click to browse): 
+				{% else %}
+					The top level concepts are (click to browse): 
+				{% endif %}
+					<ul class="disc">
+					{% for entry in ctx.get_root_entries  %}
+						<li><a href="{{ entry.uri }}" rel="self">{{ entry.label }}</a>{% if not entry|is_native_ov  %} [<a href="/vocabularies/lookup?uri={{ entry.uri }}" rel="self">browse in OV</a>]{% endif %}</li>
+					{% endfor %}
+					</ul>
+				</p>
+			{% endif %}
+			{% if ctx.info %}
+				<hr />
+				{% autoescape off %}{{ ctx.info }}{% endautoescape %}
+			{% endif %}
+		</div>
+	</div>
+	{% endfor %}
+{% endblock %}
+
+{% block page_sidebar %}
+	<div id="blog-categories">
+		<ul>
+			<li><a class="blog-category-link-enabled" title="Show all taxonomies" href="/vocabularies?type=tax">Taxonomy ({% count_by_type "tax" %})</a></li>
+			<li><a class="blog-category-link-enabled" href="/vocabularies?type=tez" title="Show all thesauri">Thesaurus ({% count_by_type "tez" %})</a></li>
+		</ul>
+	</div>
+	<div id="blog-archives"></div>
+	<ul class="blog-tag-cloud">
+		{# list tags #}
+		{% for tag in tags %}
+			<li><a href="/vocabularies?tag={{ tag }}" title="Filter by tag: {{ tag }}" class="blog-tag-size-{% count_by_tag tag %}" rel="tag">{{ tag }}</a></li>
+		{% endfor %}
+		{# list languages #}
+		{% for lang in langs %}
+			<li><a href="/vocabularies?lang={{ lang }}" title="Filter by lang: {{ lang }}" class="blog-tag-size-{% count_by_lang lang %}" rel="tag">{{ lang }}</a></li>
+		{% endfor %}
+	</ul>
+{% endblock %}
+
+{% block page_breadcrumbs %}
+	<ul>
+		<li><a href="/">Welcome</a>&nbsp;>&nbsp;</li>
+		<li><a href="/vocabularies">Vocabularies</a>&nbsp;>&nbsp;</li></ul>
+		{# add current state #}
+{% endblock %}

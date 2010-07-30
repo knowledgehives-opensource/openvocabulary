@@ -29,6 +29,7 @@ NAMESPACES = {
     'xsd'       : 'http://www.w3.org/2001/XMLSchema#',
     'nfo'       : 'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#',
     'v'         : 'http://rdf.data-vocabulary.org/#', # google rich snippets
+    'ov'        : 'http://www.openvocabulary.info/ontology/', #open vocabulary
 }
 
 DEF_VOCAB_NAMESPACE = "http://id.ibookfactory.com/vocab#"

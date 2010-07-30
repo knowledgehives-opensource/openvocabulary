@@ -1,4 +1,14 @@
-from django.db import models
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# encoding: utf-8
+"""
+models.py
+
+Created by Sebastian Kruk on .
+Copyright (c)  Knowledge Hives sp. z o.o.. All rights reserved.
+"""
+
+from django.db import connection, models
 from django.contrib import admin
 from django.template import RequestContext
 from ov_django.rdf import *
@@ -7,10 +17,12 @@ from ov_django.settings import BASE_URL_PATH
 # --------------------- context -----------------------------    
     
 CONTEXT_TYPE = (
-    ('tax', 'taxonomy'),
-    ('tez', 'thesaurus'),
-    ('tag', 'tagging')
+    ('tax', 'Taxonomy'),
+    ('tez', 'Thesaurus'),
+    ('tag', 'Tagging')
 )    
+DICT_CONTEXT_TYPE = dict(CONTEXT_TYPE)
+
     
 class ContextManager(models.Manager):
     def search(self, key):
@@ -28,16 +40,34 @@ class ContextManager(models.Manager):
             result = None
         return result
     
+    """
+    Returns a set of distinctive languages
+    """ 
+    def get_langs(self):
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT DISTINCT lang
+            FROM ov_context""")
+        return [row[0] for row in cursor]        
+
+"""
+Simple class for storing tags
+"""
+class Tag(models.Model):
+    label = models.CharField(max_length=50, db_index=True, unique=True)
+    
 """
 Represents the dictionary
 """    
 class Context(models.Model):
     label = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    info = models.TextField(blank=True, null=True)
     uri = models.URLField(max_length=255, verify_exists=False, db_index=True, unique=True)
     ns = models.CharField(max_length=10)
     type = models.CharField(max_length=3, choices=CONTEXT_TYPE, default='tag')
-    lang = models.CharField(max_length=10, default='en') 
+    lang = models.CharField(max_length=10, default='en')
+    tags = models.ManyToManyField(Tag, related_name='tag', symmetrical=False, blank=True, null=True)
     term_uri_pattern = models.CharField(max_length=500, blank=True, null=True, verbose_name="uri pattern")
     # additional_properties
     # tree_properties
@@ -52,8 +82,8 @@ class Context(models.Model):
     '''
     Returns roots of this context
     '''
-    def get_roots(self):
-        return [] #TODO
+    def get_root_entries(self):
+        return Entry.objects.filter(is_root=True, context=self)
 
     """
     Django meta information
@@ -192,16 +222,12 @@ ENTRY_RELATION_TYPES = (
     ('classifiedByUsage', 'classified by usage'),
 )
 
-CLASSIFICATION_TYPES = (
-    ('none', ''),
-)
-
 
 
 class EntryManager(models.Manager):
-    def search(self, key):
-        results = [] #Publisher.objects.filter(name__icontains=key) | Publisher.objects.filter(address__icontains=key)
-        print "Found %d results for %s" % (len(results), key)
+    def search(self, key, value):
+        results = Entry.objects.get(label__icontains=value) #Publisher.objects.filter(name__icontains=key) | Publisher.objects.filter(address__icontains=key)
+        print "Found %d results for %s=%s" % (len(results), key, value)
         return results
 
     """
@@ -251,7 +277,13 @@ class Entry(models.Model):
     to-string representation
     """
     def __unicode__(self):
-        return "%s [%s]" % (self.get_label(), self.uri)
+        if self.context:
+            if self.type_tag:
+                return "%s (%s) [%s | %s]" % (self.get_label(), self.type_tag, self.uri, self.context.label)
+            else:
+                return "%s [%s | %s]" % (self.get_label(), self.uri, self.context.label)
+        else:
+            return "%s [%s | !!!]" % (self.get_label(), self.uri)
     
     """
     Returns array of entries that are children of this one in the tree

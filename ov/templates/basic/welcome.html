@@ -1,15 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+{% extends "basic/template.html" %}
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-	<title>Welcome to OpenVocabulary</title>
-	
-</head>
+{% block page_title %}Welcome to OpenVocabulary.info{% endblock %}
 
-<body>
+{% block page_content %}
+	<p>We are happy to present Open Vocabulary, one of <a href="http://opensource.knowledgehives.com/" rel="external">open source projects hosted by Knowledge Hives</a>, which delivers Java API and REST API for managing knowledge organization systems. Since version 2.0 of OpenVocabulary, we also support Python Django API to access our vocabularies.</p>
 
+	<p>Apart from delivering Java/REST/Django API, the goal of Open Vocabulary is to encode in <a href="http://www.w3.org/2004/02/skos/" rel="external">SKOS</a>/<a href="http://www.w3.org/RDF/" rel="external">RDF</a> standard those vocabularies that were not expressed before in RDF or SKOS, or both, before.</p>
 
-</body>
-</html>
+	<p>The REST API enables browsing through the vocabulary space following publishing the <a href="http://linkeddata.org/" rel="external">Linked Data</a> guidelines. You can start browsing from <a href="vocabularies/" rel="self" title="Vocabularies">Vocabularies section</a>.</p> 
+
+	<p>If you want to download the SKOS/RDF sources maintained by the Open Vocabulary project, as well as their full text indexes in <a href="http://lucene.apache.org/java/docs/" rel="external">Lucene</a> format, please contact us at <a href="mailto:openvocabulary@knowledgehives.com" rel="self">openvocabulary@knowledgehives.com</a>.</p>
+{% endblock %}
+
+{% block page_breadcrumbs %}
+<ul><li><a href="./">Welcome</a>&nbsp;>&nbsp;</li></ul>
+{% endblock %}
