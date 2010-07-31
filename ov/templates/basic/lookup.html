@@ -1,16 +1,142 @@
 {% extends "basic/template.html" %}
+{% load extras %}
 
-{% block page_title %}OpenVocabulary.info | Browse Vocabularies{% endblock %}
+{% block page_title %}OpenVocabulary.info | {% if entry %}{{ entry.get_label }}{% else %}Browse Vocabularies{% endif %}{% endblock %}
 
 {% block page_content %}
-	The best way to start browsing through the OpenVocabulary repository is to start with one of <a href="/vocabularies/" rel="self" title="Vocabularies">vocabularies</a>.
+	{% if entry %}
+		<div class="oventry">
+			<h1>{{ entry.get_label }}</h1>
+			{% if entry.description %}
+				<p class="description">{% autoescape off %}
+					{{ entry.description }}
+				{% endautoescape %}</p>
+			{% endif %}
+			{% if entry.gloss %}
+				<p class="gloss">{% autoescape off %}
+					{{ entry.gloss }}
+				{% endautoescape %}</p>
+			{% endif %}
+			
+			<table border="0" cellspacing="5" cellpadding="5">
+				<tr><th colspan='2'>Metadata</th></tr>
+				<tr><td>URI:</td><td>{{ entry.uri }}</td></tr>
+				{% if entry.scheme %}
+					<tr><td>In scheme:</td><td><a href="/vocabularies?uri={{ entry.context.uri }}" title="Show scheme {{ entry.context.label }}">{{ entry.context }}</a></td></tr>					
+				{% endif %}
+				{% if entry.label  %}
+					<tr><td>Label:</td><td>{{ entry.label }}</td></tr>
+				{% endif %}
+				{% if entry.lexical_form  %}
+					<tr><td>Lexical form:</td><td>{{ entry.lexical_form }}</td></tr>
+				{% endif %}
+				{% if entry.frame %}
+					<tr><td>Frame:</td><td>{{ entry.frame }}</td></tr>
+				{% endif %}
+				{% if entry.pos %}
+					<tr><td>Part of speech:</td><td>{{ entry.pos|expand_dict:'DICT_PART_OF_SPEECH' }}</td></tr>
+				{% endif %}
+				{% if entry.type_tag %}
+					<tr><td>Kind of entry:</td><td>{{ entry.type_tag|capfirst }}</td></tr>
+				{% endif %}
+				{% if entry.in_synset %}
+					<tr><td>Is in synset:</td><td>{{ entry.in_synset|create_entry_anchor:'Show related synset' }}</td></tr>
+				{% endif %}
+				{% if entry.tag_count %}
+					<tr><td>Tag count:</td><td>{{ entry.tag_count }}</td></tr>
+				{% endif %}
+				{% if entry.synset_id %}
+					<tr><td>Synset id:</td><td>{{ entry.synset_id }}</td></tr>
+				{% endif %}
+				
+			</table>
+			
+			{# Relations to other entries #}
+			
+			<table border="0" cellspacing="5" cellpadding="5">
+				<tr><th colspan='2'>Relations</th></tr>
+				{% if entry.parent %}
+				<tr><td>Parent concept:</td><td>{{ entry.parent|create_entry_anchor:'Show parent concept' }}</td></tr>
+				{% endif %}
+				{% for type in entry.types.all  %}
+					{% if forloop.first %}
+					<tr><td rowspan="{{ entry.types|length }}">Type of concept:</td>
+					{% endif %}
+					<td><a href="{{ type.uri }}" title="Get more info about this type of concepts">{{ type.uri }}</a></td>
+					{% if forloop.first %}
+					</tr>
+					{% endif %}
+				{% endfor %}
+				{% if entry.relations %}
+					{% for ref in entry|list_entry_relations %}
+						<tr><td>{{ ref.relation|expand_dict:'DICT_ENTRY_RELATION_TYPES' }}</td><td>{{ ref.object|create_entry_anchor:'show relation' }}</td></tr>
+					{% endfor %}
+				{% endif %}
+				{% for meaning in entry.meanings.all  %}
+					{% if forloop.first %}
+					<tr><td rowspan="{{ entry.meanings|length }}">Meanings:</td>
+					{% endif %}
+					<td>{{ ref.object|create_entry_anchor:'Show relation' }}</td>
+					{% if forloop.first %}
+					</tr>
+					{% endif %}
+				{% endfor %}
+				{% for word in entry.words.all %}
+					{% if forloop.first %}
+					<tr><td rowspan="{{ entry.words|length }}">Related words:</td>
+					{% endif %}
+					<td>{{ word|create_entry_anchor:'Show related words' }}</td>
+					{% if forloop.first %}
+					</tr>
+					{% endif %}
+				{% endfor %}
+				{% for word_sense in entry.word_senses.all %}
+					{% if forloop.first %}
+					<tr><td rowspan="{{ entry.word_senses|length }}">Related word senses:</td>
+					{% endif %}
+					<td>{{ word_sense|create_entry_anchor:'Show related word senses' }}</td>
+					{% if forloop.first %}
+					</tr>
+					{% endif %}
+				{% endfor %}
+				{% if entry.triples %}
+					{% for ref in entry|list_entry_triples %}
+						<tr>
+							<td><a href="{{ ref.predicate.uri }}" title="See more information about {{ ref.predicate.label }} predicate">{{ ref.predicate.label }}</a></td>
+							<td>
+								{% if ref.object %}
+									{% with ref.object|get_entry as object_entry %}
+										{% if object_entry %}
+										{{ object_entry|create_entry_anchor:'Show related entry' }}
+										{% else %}
+										<a href="{{ ref.object.uri }}" title='Show related resource'>{{ ref.object.label }}</a>	
+										{% endif %}
+									{% endwith %}
+								{% else %}
+									<span class="literal" {% if ref.literal_lang %}xml:lang="{{ ref.literal_lang }}"{% endif %}>{{ ref.literal }}</span>
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				{% endif %}
+			</table>
+		    {# is_root = models.BooleanField(default=False) #}
+			{# TODO: IMPORTANT reversed properties #}
+		</div>
+	
+	{% else %}
+		The best way to start browsing through the OpenVocabulary repository is to start with one of <a href="/vocabularies/" rel="self" title="Vocabularies">vocabularies</a>.
+	{% endif %}
 {% endblock %}
 
 
 {% block page_breadcrumbs %}
 	<ul>
-		<li><a href="/">Welcome</a>&nbsp;>&nbsp;</li>
-		<li><a href="/vocabularies/lookup">Browse</a>&nbsp;>&nbsp;</li>
+		<li><a href="/" title="Welcome page">Welcome</a>&nbsp;>&nbsp;</li>
+		<li><a href="/vocabularies/lookup" title="Browsing section">Browse</a>&nbsp;>&nbsp;</li>
+		{% if entry %}
+		<li>{{ entry|create_entry_anchor:'This entry' }}</li>
+		{% endif %}
 		{# add current lookup #}
 	</ul>
 {% endblock %}

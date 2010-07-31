@@ -1,9 +1,10 @@
 import re
 
 from django import template
+from django.utils.safestring import mark_safe
 from ov_django.ov.models import *
 from ov_django.rdf import NAMESPACES
-from ov_django.settings import BASE_OV_PATH
+from ov_django.settings import BASE_OV_PATH, BASE_URL_PATH
 
 register = template.Library()
 
@@ -134,8 +135,54 @@ def is_native_ov(value):
     """
     Checks if given entry is from native OV 
     """
-    return value.uri.startswith(BASE_OV_PATH)
+    return value.uri.startswith(BASE_URL_PATH)
 
+@register.filter
+def list_entry_relations(entry):
+    """
+    Lists all EntryRelation objects with given entry as subject
+    """
+    return EntryReference.objects.filter(subject=entry).order_by("relation")
+
+@register.filter
+def list_entry_triples(entry):
+    """
+    Lists all Triples with given entry as subject
+    """
+    return Triple.objects.filter(subject=entry).order_by("predicate")
+
+@register.filter
+def get_entry(uri):
+    """
+    Checks if given URI can be mapped to Entry object. Returns this object
+    """    
+    try:
+        return Entry.objects.get(uri=uri.uri)
+    except Entry.DoesNotExist, e:
+        return None
+    
+
+@register.filter
+def create_entry_anchor(entry, title):
+    """
+    Short hand for creating anchor for given referenced entry with given title 
+    <a href="/vocabularies/lookup?uri={{ ref.object.uri }}" title="Show {{ ref.relation }}">{{ ref.object.get_label }}</a>
+    """
+    if is_native_ov(entry):
+        template = "<a href='%s' title='%s'>%s</a>"
+    else:
+        template = "<a href='/vocabularies/lookup?uri=%s' title='%s'>%s</a>"
+    return mark_safe(template % (_escape_apostrophe(entry.uri), title, _escape_apostrophe(entry.get_label())))
+
+    
+"""
+shorthand function for replacing ' by \'
+"""
+def _escape_apostrophe(text):
+    return text.replace("'", "\'")
+
+    
+    
 """
 Shortcut function
 """

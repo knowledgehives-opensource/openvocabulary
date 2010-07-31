@@ -63,13 +63,13 @@ Concepts lookup
 def lookup_concept(request, path=None):
     state = "lookup"
     accept = request.META.get("HTTP_ACCEPT", "")
-    result = None
+    entry = None
     if path:
         uri = BASE_OV_PATH + path
     else:
-        uri = request.GET.get('uri', '')
+        uri = request.GET.get('uri', None)
     if uri:
-        result = Entry.objects.lookup(uri) if id != '' else None
+        entry = Entry.objects.lookup(uri)
     site_name = request.get_host()
     return render_to_response('basic/lookup.html', locals())#, mimetype="application/xhtml+xml")
 

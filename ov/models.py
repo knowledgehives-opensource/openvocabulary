@@ -137,13 +137,17 @@ Represents an arbitrary URI
 """    
 class URI(models.Model):
     uri = models.URLField(max_length=255, verify_exists=False, db_index=True, unique=True)
+    label = models.CharField(max_length=100, null=True, blank=True)
     objects = URIManager()
     
     """
     to-string representation
     """
     def __unicode__(self):
-        return "<%s>" % self.uri
+        if self.label:
+            return "%s <%s>" % (self.label, self.uri)
+        else:
+            return "<%s>" % (self.uri)
 
               
 class URIAdmin(admin.ModelAdmin):
@@ -172,13 +176,17 @@ Represents an arbitrary URI
 """    
 class Predicate(models.Model):
     uri = models.URLField(max_length=255, verify_exists=True, db_index=True, unique=True)
+    label = models.CharField(max_length=100, null=True, blank=True)
     objects = PredicateManager()
 
     """
     to-string representation
     """
     def __unicode__(self):
-        return "<%s>" % self.uri
+        if self.label:
+            return "%s <%s>" % (self.label, self.uri)
+        else:
+            return "<%s>" % (self.uri)
 
 
 class URIAdmin(admin.ModelAdmin):
@@ -190,13 +198,14 @@ class URIAdmin(admin.ModelAdmin):
 # --------------------- entry -----------------------------    
 
 PART_OF_SPEECH = (
-    ('adj', 'adjective'),
-	('sat', 'adjectivesatellite'),
-	('adv', 'adverb'),
-	('noun', 'noun'),
-	('verb', 'verb'),
-	('none', 'unknown'),
+    ('adj', 'Adjective'),
+	('sat', 'Adjective Satellite'),
+	('adv', 'Adverb'),
+	('noun', 'Noun'),
+	('verb', 'Verb'),
+	('none', 'Unknown'),
 )
+DICT_PART_OF_SPEECH = dict(PART_OF_SPEECH)
 
 ENTRY_RELATION_TYPES = (
     ('hyponym', 'hyponym'),
@@ -221,6 +230,7 @@ ENTRY_RELATION_TYPES = (
     ('classifiedByTopic', 'classified by topic'),
     ('classifiedByUsage', 'classified by usage'),
 )
+DICT_ENTRY_RELATION_TYPES = dict(ENTRY_RELATION_TYPES)
 
 
 
