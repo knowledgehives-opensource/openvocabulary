@@ -1,0 +1,67 @@
+{% extends "basic/template.html" %}
+{% load extras %}
+
+{% block page_title %}OpenVocabulary.info | Search Vocabularies{% endblock %}
+
+{% block page_content %}
+			You can also search through the full text index of the Open Vocabulary repository. 
+
+<hr/>
+
+<form class="search" id="adv_search_form" action="/vocabularies/search" method="get">
+	<table>
+		{# {{ form.as_table }} #}
+		<tr>
+			<td><label for="search-q" >Search for: </label></td>
+			<td><input type="search" id="id_q" name="q" size="30" autosave="at.search" results="5" placeholder="anywhere in the index" value="{{ query.q }}" /></td>
+		</tr>
+		{# <tr> #}
+		{# 	<td><label for="search-label" style="width: 150px;">Search in: </label></td> #}
+		{# 	<td><input type="search" id="search-label" name="label" size="30" autosave="at.search.label" results="5" placeholder="labels of terms only" value="" /></td> #}
+		{# </tr> #}
+		<tr>
+			<td colspan="2" style="text-align: center;"><button type="submit">search</button></td>
+		</tr>
+	</table>
+	
+	{% if query %}
+	    <h3>Results</h3>
+
+		<ul>
+	    {% for result in page.object_list %}
+	        <li>{{ result.object|create_entry_anchor:'Show this entry' }}</li>
+	    {% empty %}
+	        <p>No results found.</p>
+	    {% endfor %}
+		</ul>
+
+	    {% if page.has_previous or page.has_next %}
+	        <div>
+	            {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+	            |
+	            {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+	        </div>
+	    {% endif %}
+	{% else %}
+	    {# Show some example queries to run, maybe query syntax, something else? #}
+	{% endif %}	
+	
+</form>
+
+{# <tr><td><label for="search-size" style="width: 150px;">Limit search to: </label></td><td><input type="search" id="search-size" name="size" size="20" autosave="at.search.size" results="5" placeholder="# of results" value="" /></td></tr> #}
+{# <tr><td><label for="search-threshold" style="width: 150px;">With accuracy above: </label></td><td><input type="search" id="search-threshold" name="threshold" size="10" autosave="at.search.threshold" results="5" placeholder="0-1" value="" /></td></tr> #}
+
+<hr/>
+{% endblock %}
+
+
+{% block page_breadcrumbs %}
+	<ul>
+		<li><a href="/">Welcome</a>&nbsp;>&nbsp;</li>
+		<li><a href="/vocabularies/search">Search</a>&nbsp;>&nbsp;</li>
+		{% if query %}
+			<li>for: <a href="/vocabularies/search?q={{ query }}">{{ query }}</a>&nbsp;>&nbsp;</li>
+		{% endif %}
+		{# add current query #}
+		</ul>
+{% endblock %}

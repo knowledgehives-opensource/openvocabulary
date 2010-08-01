@@ -1,0 +1,3 @@
+{{ object.label }}
+{{ object.description }}
+{{ object.info }}

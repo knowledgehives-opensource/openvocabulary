@@ -11,17 +11,24 @@ Copyright (c)  Knowledge Hives sp. z o.o.. All rights reserved.
 import datetime
 from haystack.indexes import *
 from haystack import site
-from myapp.models import Note
+from ov_django.ov.models import Entry, Context
 
 
-class NoteIndex(SearchIndex):
+class EntryIndex(SearchIndex):
     text = CharField(document=True, use_template=True)
-    author = CharField(model_attr='user')
-    pub_date = DateTimeField(model_attr='pub_date')
+    label = CharField(use_template=True)
+#    rendered = CharField(use_template=True, indexed=False)
+#    def get_queryset(self):
+#        """Used when the entire index for model is updated."""
+#        return Note.objects.filter(pub_date__lte=datetime.datetime.now())
 
-    def get_queryset(self):
-        """Used when the entire index for model is updated."""
-        return Note.objects.filter(pub_date__lte=datetime.datetime.now())
+site.register(Entry, EntryIndex)
 
+class ContextIndex(SearchIndex):
+    text = CharField(document=True, use_template=True)
+    label = CharField(model_attr="label")
+#    def get_queryset(self):
+#        """Used when the entire index for model is updated."""
+#        return Note.objects.filter(pub_date__lte=datetime.datetime.now())
 
-site.register(Note, NoteIndex)
+site.register(Context, ContextIndex)

@@ -48,14 +48,16 @@ def list_vocabularies(request):
 Concepts search
 """
 def search_concepts(request):
+    from haystack.views import SearchView
     state = "search"
-    query = request.GET.get('q', '')
-    label = request.GET.get('label', '')
+    return SearchView(template='search/search.html')(request)    
+    # query = request.GET.get('q', '')
+    # label = request.GET.get('label', '')
     # size  = request.GET.get('size', 5)
     # threshold = request.GET.get('threshold', 0.5)
-    results = Entry.objects.search(query) if query != '' else []
-    site_name = request.get_host()
-    return render_to_response('basic/search.html', locals())#, mimetype="application/xhtml+xml")
+    # results = Entry.objects.search(query) if query != '' else []
+    # site_name = request.get_host()
+    # return render_to_response('basic/search.html', locals())#, mimetype="application/xhtml+xml")
 
 """
 Concepts lookup

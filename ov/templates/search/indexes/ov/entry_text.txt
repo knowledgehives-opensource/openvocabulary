@@ -1,0 +1,19 @@
+{% load extras %}
+{{ object.get_label }}
+{{ object.description }}
+{{ object.gloss }}
+{% if object.triples %}
+	{% for ref in object|list_entry_triples %}
+		{% if ref.object %}
+			{% with ref.object|get_entry as object_entry %}
+				{% if object_entry %}
+					{{ object_entry.get_label }}
+				{% else %}
+					{{ ref.object.label }}
+				{% endif %}
+			{% endwith %}
+		{% else %}
+			{{ ref.literal }}
+		{% endif %}
+	{% endfor %}
+{% endif %}
