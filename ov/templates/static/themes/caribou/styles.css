@@ -1129,3 +1129,7 @@ label{
 .form-input-button { 
 } 
 /* @end */
+
+td { 
+vertical-align: top;
+}
