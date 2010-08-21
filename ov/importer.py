@@ -193,12 +193,12 @@ class TriplesParser:
     """
     Pattern for processing triples
     """
-    _triple = re.compile(r"""[<](?P<subject>[^>]+)[>]      # subject
+    _triple = re.compile(r"""\s*[<](?P<subject>[^>]+)[>]      # subject
                              \s+
                              [<](?P<predicate>[^>]+)[>]    # predicate 
                              \s+
                              (?:(?:[<](?P<obj_uri>[^>]+)[>])|    # object uri
-                                (?:["](?P<obj_lit>.+)["]      # object literal
+                                (?:["'](?P<obj_lit>.+)['"]      # object literal
                                    (?:[@](?P<obj_lang>.+))?   # object literal lang tag
                                    (?:^^(?P<obj_type>.+))?))  # object literal type
                              \s*[.]\s*$
@@ -223,12 +223,12 @@ class TriplesParser:
     Read in given file - line by line
     """
     def read(self, file_name):
-        file = codecs.open(file_name, encoding='ascii')
+        file = codecs.open(file_name, encoding='utf-8', mode="r")
         i = 0
         size = 10000
         date = time.mktime(datetime.datetime.utcnow().timetuple())
         for line in file:
-            self.process_line(line)
+            self.process_line(line.rstrip())
             i += 1
             if not i%size:
                 now_date = time.mktime(datetime.datetime.utcnow().timetuple())
@@ -236,7 +236,7 @@ class TriplesParser:
                 gc.collect()
                 print "[INFO] importing next %d lines [%d, %d]" % (size, i, now_date-date)
                 date = now_date
-        
+
     """
     Process single line entry
     """
@@ -244,7 +244,7 @@ class TriplesParser:
         m = self._triple.match(line)
         
         if not m:
-#            print "[ERROR] could not parse line: "+line
+            print "[ERROR] could not parse line: |%s|" % line.encode("utf-8")
             return
             
         gdict = m.groupdict()
