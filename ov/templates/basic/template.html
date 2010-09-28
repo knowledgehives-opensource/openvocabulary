@@ -62,7 +62,7 @@
 	<div id="sidebarContainer"><!-- Start Sidebar wrapper -->
 		<div id="sidebar"><!-- Start sidebar content -->
 		<div class="sideHeader"></div><!-- Sidebar header --> 
-			<span style="font:10px Monaco; "><form class="search" id="search_form" action="/vocabularies/search" method="get"><br />	<input type="search" id="proj-search" name="q" size="15" accesskey="f" autosave="at.search" results="5" placeholder="Search" value="" /><button type="submit">search</button><br />	</form></span><!-- sidebar content you enter in the page inspector -->
+			<span style="font:10px Monaco; "><form class="search" id="search_form" action="/vocabularies/search" method="get"><br />	<input type="search" id="proj-search" name="q" size="15" accesskey="f" autosave="at.search" results="5" placeholder="Search" value="{{ query }}" /><button type="submit">search</button><br />	</form></span><!-- sidebar content you enter in the page inspector -->
 			{% block page_sidebar %}{% endblock %}
 			 <!-- sidebar content such as the blog archive links -->
 		</div><!-- End sidebar content -->

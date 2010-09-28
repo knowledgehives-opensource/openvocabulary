@@ -322,6 +322,15 @@ class Entry(models.Model):
 
     def get_label(self):
         return self.lexical_form if self.lexical_form else self.label
+        
+    def get_description(self):
+        if self.description:
+            return self.description
+        if self.gloss:    
+            return self.gloss 
+        if self.in_synset:
+            return self.in_synset.gloss
+         
 
     """
     Django meta information
