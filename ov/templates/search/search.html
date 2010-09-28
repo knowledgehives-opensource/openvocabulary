@@ -35,7 +35,7 @@
 				<a class="label" href='/vocabularies/lookup?uri={{ result.object.uri }}' title='Show entry: {{ result.object.get_label }}'>{{ result.object.get_label }}</a>
 			  {% endif %}
 			  {% if result.object.get_description %}
-			  <p class="description">{% highlight result.object.get_description with query html_tag "span" class "highlight" max_length 40 %}</p>
+			  <p class="description">{% highlight result.object.get_description with query max_length 100 %}</p>
 			  {% endif %}
 			  <p class="metadata"><label>type of concept:</label>{% for type in result.object.types.all  %}<a href="{{ type.uri }}" title="Get more info about this type of concepts">{{ type.uri|get_short_name }}</a>{% if not forloop.last %},{% endif %}{% endfor %}; <label>vocabulary:</label><a href="/vocabularies?uri={{ result.object.context.uri }}">{{ result.object.context.label }}</a></p>
 			</li>

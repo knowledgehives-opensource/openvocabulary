@@ -1150,6 +1150,6 @@ a.label:hover { text-decoration: underline; }
 p.metadata { font-size: smaller; color: #888; }
 p.metadata label { font-weight: bold; padding-right: 0.5em; }
 p.description { font-size: small; color: #777; margin-bottom: 5px; }
-p.description span.highlight { color: green; }
+p.description span.highlighted { color: green; }
 
 
