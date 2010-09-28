@@ -3,7 +3,7 @@ import re
 from django import template
 from django.utils.safestring import mark_safe
 from ov_django.ov.models import *
-from ov_django.rdf import NAMESPACES
+from ov_django.rdf import NAMESPACES, INV_NAMESPACE
 from ov_django.settings import BASE_OV_PATH, BASE_URL_PATH
 
 register = template.Library()
@@ -12,6 +12,23 @@ register = template.Library()
 def cut(value, arg):
     "Removes all values of arg from the given string"
     return value.replace(arg, '')
+
+@register.filter(name='get_short_name')
+def get_short_name(value):
+	"""
+	Returns local name of given URI - the last after # or /
+	"""
+	name = re.sub("^.+[/#]([^/#]+)", "\\1", value)
+	ns = re.sub("^(.+[/#])[^/#]+", "\\1", value)
+	return INV_NAMESPACE[ns]+":"+name if (ns in INV_NAMESPACE) else name
+	
+@register.filter(name='get_label')
+def get_label(predicate):
+	if hasattr(predicate, 'label') and predicate.label:
+		return predicate.label
+	if hasattr(predicate, 'uri'):
+		return get_short_name(predicate.uri)
+	return str(predicate)
     
 @register.filter
 def expand_dict(value, arg):

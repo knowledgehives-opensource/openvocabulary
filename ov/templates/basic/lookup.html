@@ -58,13 +58,14 @@
 				{% if entry.parent %}
 				<tr><td>Parent&nbsp;concept:</td><td>{{ entry.parent|create_entry_anchor:'Show parent concept' }}</td></tr>
 				{% endif %}
+				
 				{% for type in entry.types.all  %}
 					{% if forloop.first %}
 					<tr><td rowspan="{{ entry.types.all|length }}">Type&nbsp;of&nbsp;concept:</td>
 					{% else %}
 					<tr>
 					{% endif %}
-					<td><a href="{{ type.uri }}" title="Get more info about this type of concepts">{{ type.uri }}</a></td>
+					<td><a href="{{ type.uri }}" title="Get more info about this type of concepts">{{ type.uri|get_short_name }}</a></td>
 					</tr>
 				{% endfor %}
 				{% if entry.relations %}
@@ -102,7 +103,7 @@
 				{% if entry.triples %}
 					{% for ref in entry|list_entry_triples %}
 						<tr>
-							<td><a href="{{ ref.predicate.uri }}" title="See more information about {{ ref.predicate.label }} predicate">{{ ref.predicate.label }}</a></td>
+							<td><a href="{{ ref.predicate.uri }}" title="See more information about {{ ref.predicate|get_label }} predicate">{{ ref.predicate|get_label }}</a></td>
 							<td>
 								{% if ref.object %}
 									{% with ref.object|get_entry as object_entry %}

@@ -32,6 +32,8 @@ NAMESPACES = {
     'ov'        : 'http://www.openvocabulary.info/ontology/', #open vocabulary
 }
 
+INV_NAMESPACE = dict([[v,k] for k,v in NAMESPACES.items()])
+
 DEF_VOCAB_NAMESPACE = "http://id.ibookfactory.com/vocab#"
 DEF_INSTANCE_NAMESPACE = "http://id.ibookfactory.com/"
 

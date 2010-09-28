@@ -33,7 +33,7 @@
 			  {% else %}
 				<a href='/vocabularies/lookup?uri={{ result.object.uri }}' title='Show entry: {{ result.object.get_label }}'>{{ result.object.get_label }}</a>
 			  {% endif %}
-			  <p>{{ object.get_description }}</p>
+			  <p>{{ result.object.get_description }}</p>
 			</li>
 	    {% empty %}
 	        <p>No results found.</p>
