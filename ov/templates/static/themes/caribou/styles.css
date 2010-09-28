@@ -584,7 +584,8 @@ ul.blog-tag-cloud li a{
 
 .blog-entry-summary {
 }
-.blog-archive-headings-wrapper {
+
+.blog-archive-headings-wrapper {
 	font-size: 1.4em;
 	padding-bottom: 25px;
 	background: url(images/blog_bottom_bar.png) no-repeat center bottom;
@@ -595,7 +596,9 @@ ul.blog-tag-cloud li a{
 
 .blog-archive-entries-wrapper .blog-entry {
 	padding-top: 20px;
-}.blog-archive-month {
+}
+
+.blog-archive-month {
 	font-size: 1.2em;
 	padding-left: 2;
 
@@ -603,7 +606,9 @@ ul.blog-tag-cloud li a{
 
 .blog-archive-link {
 	font-size: 0.8em;
-}.blog-archive-link a:link, .blog-archive-link a:visited {
+}
+
+.blog-archive-link a:link, .blog-archive-link a:visited {
 }
 	
 /* @end */
@@ -1051,9 +1056,13 @@ p.exif-user-comment {
 .movie-page-title {
 	font-size: 2.2em;
 	margin-bottom: 10px;
-}.movie-page-description {
+}
+
+.movie-page-description {
 	margin-bottom: 20px;
-}.movie-thumbnail-frame {
+}
+
+.movie-thumbnail-frame {
 	width: 132px;
 	height: 162px;
 	float: left;
@@ -1133,3 +1142,11 @@ label{
 td { 
 vertical-align: top;
 }
+
+
+/* search results */
+p.metadata { font-size: smaller; color: #888; }
+p.metadata label { font-weight: bold; padding-right: 0.5em; }
+p.description { font-size: small; color: #777; }
+
+
