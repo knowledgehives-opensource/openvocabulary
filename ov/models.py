@@ -330,7 +330,7 @@ class Entry(models.Model):
 			return self.gloss 
 		if self.in_synset:
 			return self.in_synset.gloss
-		 
+		return ""
 
 	"""
 	Django meta information
