@@ -1,4 +1,6 @@
 {% extends "basic/template.html" %}
+{% load more_like_this %}
+{% load highlight %}
 {% load extras %}
 
 {% block page_title %}OpenVocabulary.info | {% if entry %}{{ entry.get_label }}{% else %}Browse Vocabularies{% endif %}{% endblock %}
@@ -129,6 +131,31 @@
 	{% else %}
 		The best way to start browsing through the OpenVocabulary repository is to start with one of <a href="/vocabularies/" rel="self" title="Vocabularies">vocabularies</a>.
 	{% endif %}
+	
+	{% more_like_this entry as related_content limit 5  %}
+	
+	<hr style="width: 75%; margin-top: 3em; margin-bottom: 3em; " />
+	{% ifnotequal related_countent|length 0 %}
+	<h3>Related entries</h3>
+	<ul>
+	    {% for result in related_content %}
+	        <li>
+			  {% if result.object|is_native_ov %}
+				<a class="label" href='{{ result.object.uri }}' title='Show entry: {{ result.object.get_label }}'>{{ result.object.get_label }}</a>
+			  {% else %}
+				<a class="label" href='/vocabularies/lookup?uri={{ result.object.uri }}' title='Show entry: {{ result.object.get_label }}'>{{ result.object.get_label }}</a>
+			  {% endif %}
+			  {% if result.object.get_description %}
+			  <p class="description">{{ result.object.get_description }}</p>
+			  {% endif %}
+			  <p class="metadata"><label>type of concept:</label>{% for type in result.object.types.all  %}<a href="{{ type.uri }}" title="Get more info about this type of concepts">{{ type.uri|get_short_name }}</a>{% if not forloop.last %},{% endif %}{% endfor %}; <label>vocabulary:</label><a href="/vocabularies?uri={{ result.object.context.uri }}">{{ result.object.context.label }}</a></p>
+			</li>
+	    {% empty %}
+	        <p>No results found.</p>
+	    {% endfor %}
+	</ul>
+	{% endifnotequal %}
+	
 {% endblock %}
 
 
