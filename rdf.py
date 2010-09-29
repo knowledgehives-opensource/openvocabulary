@@ -31,8 +31,10 @@ NAMESPACES = {
 	'dbpediap'  : 'http://dbpedia.org/property/',
 	'xsd'       : 'http://www.w3.org/2001/XMLSchema#',
 	'nfo'       : 'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#',
-	'v'         : 'http://rdf.data-vocabulary.org/#', # google rich snippets
-	'ov'        : 'http://www.openvocabulary.info/ontology/', #open vocabulary
+    'v'         : 'http://rdf.data-vocabulary.org/#', # google rich snippets,
+    'wgs'       : 'http://www.w3.org/2003/01/geo/wgs84_pos#', #geo location 
+    'rev'       : 'http://purl.org/stuff/rev#', #review
+    'geo'		: 'http://www.w3.org/2003/01/geo/wgs84_pos#',
 }
 
 INV_NAMESPACE = dict([[v,k] for k,v in NAMESPACES.items()])
@@ -62,17 +64,16 @@ class RdfConcept(object):
 		# -- for each defined property --
 		rdfMeta = self.rdfMeta()
 		for prop in rdfMeta:
-			"""
 			condition = True
 			if "condition" in rdfMeta[prop]:
 				ctuple = rdfMeta[prop]["condition"]
-				cvalue = self.get_value(ctuple[0],
-		  
-			"""
-			property_uri, rval = self.get_property_uris(prop, rdfMeta)
-			if rval:
-				for puri in property_uri:
-					rdf += ";\n\t%s %s" % (self.to_uri(puri), rval)
+				cvalue = self.get_value(ctuple[0])
+				condition = cvalue == ctuple[1]
+			if condition:
+				property_uri, rval = self.get_property_uris(prop, rdfMeta)
+				if rval:
+					for puri in property_uri:
+						rdf += ";\n\t%s %s" % (self.to_uri(puri), rval)
 		#        
 		rdf += ".\n"
 		return rdf
@@ -201,10 +202,7 @@ class RdfConcept(object):
 	Returns value for given property using this property as given, or mathing property or callable function from rdf spec
 	
 	"""
-	def get_value(self, prop, rdfMeta=None):
-		if not rdfMeta:
-			rdfMeta = self.rdfMeta()
-		rdfprops = rdfMeta[prop]	  
+	def get_property_value(self, prop, rdfprops):
 		if "property" in rdfprops and hasattr(self, rdfprops["property"]):
 			if callable(eval("self."+rdfprops["property"])):
 				dbval = eval("self."+rdfprops["property"]+"()")
@@ -216,6 +214,17 @@ class RdfConcept(object):
 		return dbval
 		
 	"""
+	returns value by given property 
+	"""
+	def get_value(self, prop):
+		val = None
+		if hasattr(self, prop) and callable(eval("self."+prop)):
+			val = eval("self."+prop+"()")
+		elif hasattr(self, prop):
+			val = getattr(self, prop)
+		return val
+		
+	"""
 	Converts to string information based on the property information
 	"""        
 	def property_to_string(self, prop):
@@ -224,7 +233,7 @@ class RdfConcept(object):
 			
 		rdfMeta = self.rdfMeta()
 		rdfprops = rdfMeta[prop]
-		dbval = self.get_value(prop, rdfMeta)
+		dbval = self.get_property_value(prop, rdfprops)
 		#-- check if if conversion for value is given
 		if 'value' in rdfprops:
 			if 'dict' in rdfprops:
