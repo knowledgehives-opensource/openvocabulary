@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# encoding: utf-8
+# -*- coding: utf-8 -*-
 import re
 import uuid
 
@@ -59,9 +62,17 @@ class RdfConcept(object):
         # -- for each defined property --
         rdfMeta = self.rdfMeta()
         for prop in rdfMeta:
+		  """
+            condition = True
+            if "condition" in rdfMeta[prop]:
+                ctuple = rdfMeta[prop]["condition"]
+                cvalue = self.get_value(ctuple[0],
+		  
+		  """
             property_uri, rval = self.get_property_uris(prop, rdfMeta)
-            for puri in property_uri:
-                rdf += ";\n\t%s %s" % (self.to_uri(puri), rval)
+            if rval:
+                for puri in property_uri:
+                    rdf += ";\n\t%s %s" % (self.to_uri(puri), rval)
         #        
         rdf += ".\n"
         return rdf
@@ -181,16 +192,39 @@ class RdfConcept(object):
             return self.to_uri(obj.get_uri())
         elif isinstance(obj, (list, tuple, QuerySet)):
             return self.objects_as_rdf_list(obj)
+        elif obj:
+            return '"' + unicode(obj) + '"'
         else:
-            return '"%s"' % str(obj)
+            return None
     
+    """
+    Returns value for given property using this property as given, or mathing property or callable function from rdf spec
+    
+    """
+    def get_value(self, prop, rdfMeta=None):
+        if not rdfMeta:
+            rdfMeta = self.rdfMeta()
+        rdfprops = rdfMeta[prop]	  
+        if "property" in rdfprops and hasattr(self, rdfprops["property"]):
+            if callable(eval("self."+rdfprops["property"])):
+                dbval = eval("self."+rdfprops["property"]+"()")
+            else:
+                dbval = getattr(self, rdfprops["property"])
+        else:
+            dbval = getattr(self, prop)
+            
+        return dbval
+        
     """
     Converts to string information based on the property information
     """        
     def property_to_string(self, prop):
+        if prop is None:
+            return prop
+            
         rdfMeta = self.rdfMeta()
         rdfprops = rdfMeta[prop]
-        dbval = getattr(self, rdfprops["property"]) if "property" in rdfprops else getattr(self, prop)
+        dbval = self.get_value(prop, rdfMeta)
         #-- check if if conversion for value is given
         if 'value' in rdfprops:
             if 'dict' in rdfprops:
@@ -256,6 +290,9 @@ URI Class
 class URI(object):
     def __init__(self, uri):
         self._uri = uri
+        
+    def __unicode__(self):
+        return "URI ["+self._uri+"]"
         
     def get_uri(self):
         return self._uri

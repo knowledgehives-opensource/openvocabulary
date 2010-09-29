@@ -11,7 +11,8 @@ Copyright (c)  Knowledge Hives sp. z o.o.. All rights reserved.
 from django.db import connection, models
 from django.contrib import admin
 from django.template import RequestContext
-from ov_django.rdf import *
+from ov_django.rdf import RdfClass
+from ov_django.rdf import URI as RdfURI
 from ov_django.settings import BASE_URL_PATH
 
 # --------------------- context -----------------------------    
@@ -59,7 +60,7 @@ class Tag(models.Model):
 """
 Represents the dictionary
 """    
-class Context(models.Model):
+class Context(models.Model, RdfClass):
 	label = models.CharField(max_length=255)
 	description = models.TextField(blank=True, null=True)
 	info = models.TextField(blank=True, null=True)
@@ -90,6 +91,34 @@ class Context(models.Model):
 	"""
 	class Meta:
 		ordering = ['label']
+		
+		
+	# -------- RdfClass --------
+	
+	"""
+	Metainformation for RDF output
+	"""
+	def rdfMeta(self):
+		return { 
+			'label' 		: {'uri' : [ RdfURI('skos:prefLabel'), RdfURI('dcel:title') ] },
+			'description' : {'uri' : [ RdfURI('v:description'), RdfURI('dcel:description'), RdfURI('rev:text'), RdfURI('bibtex:abstract') ] },
+			'info' 		: {'uri' : [ RdfURI('v:summary'), RdfURI('dcel:description'), RdfURI('rev:text'), RdfURI('bibtex:note') ] },
+			'lang' 		: {'uri' : 'dcel:language' },
+			'tags' 		: {'uri' : ['skos:topic', 'dcel:subject'] },
+			  }
+			  
+	"""
+	Override RdfClass default uri implementation
+	"""
+	def get_uri(self):
+		return self.uri
+	
+	"""
+	Override RdfClass default rdf:type listing
+	"""
+	def get_rdf_types(self):
+		return [ RdfURI('skos:ConceptScheme') ]			  
+		
 		
 			  
 class ContextAdmin(admin.ModelAdmin):
@@ -253,7 +282,7 @@ class EntryManager(models.Manager):
 """
 Represents the dictionary entry
 """    
-class Entry(models.Model):
+class Entry(models.Model, RdfClass):
 	label = models.CharField(max_length=255, null=True)
 	description = models.TextField(blank=True, null=True)
 	uri = models.URLField(max_length=255, verify_exists=False, db_index=True, unique=True)
@@ -289,9 +318,9 @@ class Entry(models.Model):
 	def __unicode__(self):
 		if self.context:
 			if self.type_tag:
-			    return "%s (%s) [%s | %s]" % (self.get_label(), self.type_tag, self.uri, self.context.label)
+				return "%s (%s) [%s | %s]" % (self.get_label(), self.type_tag, self.uri, self.context.label)
 			else:
-			    return "%s [%s | %s]" % (self.get_label(), self.uri, self.context.label)
+				return "%s [%s | %s]" % (self.get_label(), self.uri, self.context.label)
 		else:
 			return "%s [%s | !!!]" % (self.get_label(), self.uri)
 	
@@ -338,6 +367,65 @@ class Entry(models.Model):
 	class Meta:
 		ordering = ['label']
 		verbose_name_plural = "entries"
+		
+	# -------- RdfClass --------
+	
+	"""
+	Metainformation for RDF output
+	"""
+	def rdfMeta(self):
+		return { 
+			'label' 		: {'uri' : [ RdfURI('skos:prefLabel'), RdfURI('dcel:title') ] },
+			'description' : {'uri' : [ RdfURI('v:description'), RdfURI('dcel:description'), RdfURI('rev:text'), RdfURI('bibtex:abstract') ], 'property' : 'get_description' },
+			'context' 		: {'uri' : 'skos:inScheme', 'condition' : ('is_root', False) },
+			'top_concept' 	: {'uri' : 'skos:topConceptOf', 'condition' : ('is_root', True), 'property' : 'context' },
+			#'is_root' 	: {'uri' : 'dcel:language' },
+			#'relations' 	: {'uri' : 'skos:inScheme' },
+			#'meanings' 	: {'uri' : 'skos:inScheme' },
+			#'frame' 	: {'uri' : 'skos:inScheme' },
+			#'lexical_form': {'uri' : [ RdfURI('skos:prefLabel'), RdfURI('dcel:title') ] },
+			#'in_synset' 	: {'uri' : 'skos:inScheme' },
+			#'tag_count' 	: {'uri' : 'skos:inScheme' },
+			#'words' 	: {'uri' : 'skos:inScheme' },
+			  }
+	"""
+	is_root = models.BooleanField(default=False)
+	# -- thesaurus --
+	relations = models.ManyToManyField('self', related_name='relation', symmetrical=False, through='EntryReference', blank=True, null=True)
+	meanings  = models.ManyToManyField('self', related_name='meaning', symmetrical=False, blank=True, null=True)
+	frame = models.CharField(max_length=255, blank=True, null=True)
+	# -- word --
+	lexical_form = models.CharField(max_length=255, blank=True, null=True)
+	# -- word sense --
+	in_synset = models.ForeignKey('self', related_name='inSynset', blank=True, null=True)
+	tag_count = models.IntegerField(blank=True, null=True) #the tagcount value for word net
+	words = models.ManyToManyField('self', related_name='word', symmetrical=False, blank=True, null=True)
+	type_tag = models.CharField(max_length=50, blank=True, null=True)
+	# -- synset --
+	gloss = models.TextField(blank=True, null=True)
+	synset_id = models.CharField(max_length=100, blank=True, null=True)
+	pos = models.CharField(max_length=10, choices=PART_OF_SPEECH) #part of speech
+	word_senses = models.ManyToManyField('self', related_name='wordSense', symmetrical=False) # --> containsWordSense, <-- inWordSense
+	# -- taxonomy --
+	parent = models.ForeignKey('self', related_name='childOf', blank=True, null=True)
+	#
+	triples = models.ManyToManyField(Predicate, related_name='triples', symmetrical=False, through='Triple', blank=True, null=True) 
+	types = models.ManyToManyField(URI, related_name='types', symmetrical=False, blank=True, null=True)
+	"""
+
+
+	"""
+	Override RdfClass default uri implementation
+	"""
+	def get_uri(self):
+		return self.uri
+	
+	"""
+	Override RdfClass default rdf:type listing
+	"""
+	def get_rdf_types(self):
+		return [ RdfURI('skos:Concept') ]			  
+		
 
 """
 Allows to define multiple references between dictionary entries
