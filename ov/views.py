@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
 import datetime
 import re
+from exceptions import NotImplementedError
 
 from django.template.loader import get_template
 from django.template import Context
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseNotFound
 from django.shortcuts import render_to_response
+from django.db.models import Q
+from django.core import serializers
+
 
 from ov_django.settings import BASE_URL_PATH, BASE_OV_PATH
 from ov_django.ov.models import *
+from ov_django import settings
+from ov_django.ov.constants import CONTENT_TYPE_TO_SERIALIZATION
+from simplejson import dumps
+
 
 
 """
@@ -40,6 +48,14 @@ def list_vocabularies(request):
         results = Context.objects.filter(lang=lang)
     elif uri:
         results = Context.objects.filter(uri=uri)
+        page = int(request.GET.get('page', 0))
+        pstart = 10*page
+        pend = 10*(page+1)-1
+	pagep1 = page+1
+        pagem1 = page-1
+	pten = 10*(page+1)
+        for result in results:
+            result.roots = result.get_root_entries()[pstart:pend]
     else:
         results = Context.objects.all()
     
@@ -101,3 +117,27 @@ def rdfdata(request, path):
         return HttpResponse(result.to_rdf(), mimetype="application/x-turtle")
     else:
         raise Http404
+    
+
+def search_label(request, label):
+    "part of REST API - searches OV for entries with given label (and language); uri pattern: search/label/<label_to_search>"
+    accept_encoding = request.META.get('HTTP_ACCEPT_ENCODING', None)
+    if accept_encoding == None:
+        accept_encoding = settings.DEFAULT_SERIALIZATION_TYPE
+        
+    if request.method == "GET":
+        lang = request.META["HTTP_LANG"]
+        results = Entry.objects.filter(Q(lexical_form__iexact=label) | Q(label__iexact=label)).filter(context__lang=lang)
+        if(results):
+            #response = HttpResponse(serializers.serialize(CONTENT_TYPE_TO_SERIALIZATION[accept_encoding], results, fields=('label', 'description', 'uri', 'context_uri')), content_type=accept_encoding)
+            response = HttpResponse(dumps(results[0].uri), content_type=accept_encoding)
+        else:
+            response = HttpResponseNotFound();
+        return response 
+    elif request.method == "POST": #TODO Handling user authentication etc.
+        print request.POST.lists()
+    else:
+        raise NotImplementedError
+        
+        
+    

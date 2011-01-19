@@ -35,11 +35,13 @@ class TriplesParser:
     """    
     _actions = { 
         'http://www.w3.org/2004/02/skos/core#inScheme'    : 'set_scheme',
-        'http://www.w3.org/2004/02/skos/core#broader'     : 'add_broader', 
-        'http://www.w3.org/2004/02/skos/core#narrower'    : 'add_narrower', 
+        'http://www.w3.org/2004/02/skos/core#broader'     : 'add_broader',
+        'http://www.w3.org/2004/02/skos/core#narrower'    : 'add_narrower',
         'http://dmoz.org/rdf/narrow'                      : 'add_narrower',
         'http://dmoz.org/rdf/narrow1'                     : 'add_narrower',
         'http://dmoz.org/rdf/narrow2'                     : 'add_narrower',
+        'http://www.openvocabulary.info/ontology/x-broader' : 'add_broader',
+        'http://www.openvocabulary.info/ontology/x-narrower' : 'add_narrower',
                 }
     """
     <http://www.w3.org/2006/03/wn/wn20/schema/containsWordSense>
@@ -55,7 +57,7 @@ class TriplesParser:
     <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
     """
     _uri_actions = { 
-        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' : 'types', 
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' : 'types',
                    }
     """
     <http://www.w3.org/2004/02/skos/core#prefLabel>
@@ -70,8 +72,9 @@ class TriplesParser:
     """
     _literal_actions = { 
         'http://www.w3.org/2000/01/rdf-schema#label'      : 'label',
-        'http://www.w3.org/2004/02/skos/core#prefLabel'   : 'label', 
+        'http://www.w3.org/2004/02/skos/core#prefLabel'   : 'label',
         'http://purl.org/dc/elements/1.0/Title'           : 'label',
+        'http://www.openvocabulary.info/ontology/wordType': 'type_tag',
         'http://www.w3.org/2004/02/skos/core#definition'  : 'description',
         'http://purl.org/dc/elements/1.0/Description'     : 'description',
         'http://www.w3.org/2006/03/wn/wn20/schema/gloss'  : 'gloss',
@@ -96,7 +99,7 @@ class TriplesParser:
         'http://www.w3.org/2004/02/skos/core#related'   : 'similarTo',
         'http://www.w3.org/2006/03/wn/wn20/schema/similarTo' : 'similarTo',
         'http://www.w3.org/2006/03/wn/wn20/schema/hyponymOf' : 'hypernym',
-        'http://www.w3.org/2006/03/wn/wn20/schema/partMeronymOf' : 'partMeronymOf',        
+        'http://www.w3.org/2006/03/wn/wn20/schema/partMeronymOf' : 'partMeronymOf',
         'http://www.w3.org/2006/03/wn/wn20/schema/adjectivePertainsTo' : 'adjectivePertainsTo',
         'http://www.w3.org/2006/03/wn/wn20/schema/adverbPertainsTo' : 'adverbPertainsTo',
         'http://www.w3.org/2006/03/wn/wn20/schema/antonymOf' : 'antonym',
@@ -111,6 +114,7 @@ class TriplesParser:
         'http://www.w3.org/2006/03/wn/wn20/schema/classifiedByRegion' : 'classifiedByRegion',
         'http://www.w3.org/2006/03/wn/wn20/schema/classifiedByTopic' : 'classifiedByTopic',
         'http://www.w3.org/2006/03/wn/wn20/schema/classifiedByUsage' : 'classifiedByUsage',
+        'http://www.openvocabulary.info/ontology/x-antonym' : 'antonym',
     }
     """
     <http://www.w3.org/2004/02/skos/core#related>
@@ -124,10 +128,10 @@ class TriplesParser:
     <http://dmoz.org/rdf/altlang>
     <http://www.openvocabulary.info/ontology/x-antonym>
     <http://www.openvocabulary.info/ontology/x-broader>
-    <http://www.openvocabulary.info/ontology/x-narrow>
+    <http://www.openvocabulary.info/ontology/x-narrower>
     """
     _triples_actions = [
-        'http://www.w3.org/2004/02/skos/core#related', 
+        'http://www.w3.org/2004/02/skos/core#related',
         'http://www.w3.org/2000/01/rdf-schema#seeAlso',
         'http://purl.org/dc/elements/1.0/charset',
         'http://dmoz.org/rdf/newsGroup',
@@ -135,10 +139,7 @@ class TriplesParser:
         'http://dmoz.org/rdf/lastUpdate',
         'http://dmoz.org/rdf/editor',
         'http://dmoz.org/rdf/catid',
-        'http://dmoz.org/rdf/altlang',
-        'http://www.openvocabulary.info/ontology/x-antonym',
-        'http://www.openvocabulary.info/ontology/x-broader',
-        'http://www.openvocabulary.info/ontology/x-narrow',
+        'http://dmoz.org/rdf/altlang'
     ]
     """
     <http://www.w3.org/2002/07/owl#allValuesFrom>
@@ -180,14 +181,14 @@ class TriplesParser:
     """
     _word_types = {
         u'nadużyw' : 'overused',
-        u'poet' : 'poetic', 
-        u'oficj' : 'official', 
-        u'specjalist' : 'specialized', 
+        u'poet' : 'poetic',
+        u'oficj' : 'official',
+        u'specjalist' : 'specialized',
         u'wulg' : 'vulgarism',
-        u'żart' : 'facetiously', 
-        u'książk' : 'literary', 
+        u'żart' : 'facetiously',
+        u'książk' : 'literary',
         u'przestarz' : 'obsolete',
-        u'pot' : 'colloquial', 
+        u'pot' : 'colloquial',
     }
     
     """
@@ -225,17 +226,21 @@ class TriplesParser:
     def read(self, file_name):
         file = codecs.open(file_name, encoding='utf-8', mode="r")
         i = 0
-        size = 10000
+        size = 100
         date = time.mktime(datetime.datetime.utcnow().timetuple())
         for line in file:
             self.process_line(line.rstrip())
             i += 1
-            if not i%size:
+            if not i % size:
                 now_date = time.mktime(datetime.datetime.utcnow().timetuple())
                 db.reset_queries()
                 gc.collect()
-                print "[INFO] importing next %d lines [%d, %d]" % (size, i, now_date-date)
+                print "[INFO] importing next %d lines [%d, %d]" % (size, i, now_date - date)
                 date = now_date
+        # update is_root column to 1 for all root entries:
+        for (orphan,) in Entry.objects.all().filter(types__uri="http://www.w3.org/2006/03/wn/wn20/schema/Synset").filter(parent__isnull=True).values_list("id"):
+            if Entry.objects.filter(parent__id=orphan):
+                Entry.objects.filter(id=orphan).update(is_root=1)
 
     """
     Process single line entry
@@ -272,10 +277,10 @@ class TriplesParser:
             processed = False
             
             # package matching
-            obj={'pred'  : daction,
-                'uri'   : gdict['obj_uri'], 
-                'label' : gdict['obj_lit'], 
-                'lang'  : gdict['obj_lang'], 
+            obj = {'pred'  : daction,
+                'uri'   : gdict['obj_uri'],
+                'label' : gdict['obj_lit'],
+                'lang'  : gdict['obj_lang'],
                 'type'  : gdict['obj_type'], }
             
             # is it a literal predicate ?
@@ -395,7 +400,7 @@ class TriplesParser:
                 uriPred.add(oentry)
                 return True
 
-        print "[WARNING] cannot add entry  <%s> %s <%s> | %s " %  (entry.uri, pred, oentry.uri, str(uriPred))
+        print "[WARNING] cannot add entry  <%s> %s <%s> | %s " % (entry.uri, pred, oentry.uri, str(uriPred))
         return False
 
     
@@ -403,15 +408,21 @@ class TriplesParser:
     Allows to set literal of given property in Entry
     """
     def set_literal(self, entry, pred, literal):
-        if hasattr(entry, pred) and literal:
+        if hasattr(entry, pred) and literal:             
+            #===================================================================
+            # if pred is 'label':
+            #    m = self._type_tag.match(literal)
+            #    if m:
+            #        litdict = m.groupdict()
+            #        if 'type' in litdict and litdict['type'] in self._word_types:
+            #            entry.type_tag = self._word_types[litdict['type']]
+            #            entry.label = litdict['label']
+            #            return True
             # see if we can extract type before
-            if pred is 'label':
-                m = self._type_tag.match(literal)
-                if m:
-                    litdict = m.groupdict()
-                    if 'type' in litdict and litdict['type'] in self._word_types:
-                        entry.type_tag = self._word_types[litdict['type']]
-                        entry.label = litdict['label']
+            #===================================================================
+            if pred is 'type_tag':
+                if literal in self._word_types:
+                        entry.type_tag = self._word_types[literal]
                         return True
             # fallback to normal literal predicate set
             setattr(entry, pred, literal)
@@ -426,7 +437,7 @@ class TriplesParser:
     """
     def add_triple(self, entry, obj):
         upred = None
-        uobj  = None
+        uobj = None
         utype = None
         
         if 'pred' in obj and obj['pred']:
@@ -470,7 +481,7 @@ class TriplesParser:
 
             return True
             
-        print "[WARNING] cannot set scheme to non existing object: "+str(obj)
+        print "[WARNING] cannot set scheme to non existing object: " + str(obj)
         return False
     
         
@@ -489,7 +500,7 @@ class TriplesParser:
 
             return uri
             
-        print "[WARNING] cannot determine uri to a non existing object: "+str(obj)
+        print "[WARNING] cannot determine uri to a non existing object: " + str(obj)
         return None
     
     
@@ -521,7 +532,7 @@ class TriplesParser:
             
             return oentry
             
-        print "[WARNING] cannot retrieve a non existing object: "+str(obj)
+        print "[WARNING] cannot retrieve a non existing object: " + str(obj)
         return None
     
     """

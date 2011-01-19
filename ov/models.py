@@ -8,12 +8,10 @@ Created by Sebastian Kruk on .
 Copyright (c)  Knowledge Hives sp. z o.o.. All rights reserved.
 """
 
-from django.db import connection, models
+from django.db import models
 from django.contrib import admin
-from django.template import RequestContext
 from ov_django.rdf import RdfClass
 from ov_django.rdf import URI as RdfURI
-from ov_django.settings import BASE_URL_PATH
 
 # --------------------- context -----------------------------    
 	
@@ -45,12 +43,13 @@ class ContextManager(models.Manager):
 	Returns a set of distinctive languages
 	""" 
 	def get_langs(self):
-		cursor = connection.cursor()
-		cursor.execute("""
-			SELECT DISTINCT lang
-			FROM ov_context""")
-		return [row[0] for row in cursor]        
-
+#		cursor = connection.cursor()
+#		cursor.execute("""
+#			SELECT DISTINCT lang
+#			FROM ov_context""")
+		langs = Context.objects.values('lang').distinct(True).order_by()
+		return [lang['lang'] for lang in langs]   
+	
 """
 Simple class for storing tags
 """
@@ -106,7 +105,7 @@ class Context(models.Model, RdfClass):
 			'lang' 		: {'uri' : 'dcel:language' },
 			'tags' 		: {'uri' : ['skos:topic', 'dcel:subject'] },
 			  }
-			  
+
 	"""
 	Override RdfClass default uri implementation
 	"""
@@ -120,7 +119,6 @@ class Context(models.Model, RdfClass):
 		return [ RdfURI('skos:ConceptScheme') ]			  
 		
 		
-			  
 class ContextAdmin(admin.ModelAdmin):
 #    readonly_fields = ('uid',)
 	list_display = ('label', 'description', 'uri', 'ns', 'type', 'lang', 'term_uri_pattern',)
@@ -178,7 +176,7 @@ class URI(models.Model):
 		else:
 			return "<%s>" % (self.uri)
 
-			  
+
 class URIAdmin(admin.ModelAdmin):
 	pass
 
@@ -216,10 +214,6 @@ class Predicate(models.Model):
 			return "%s <%s>" % (self.label, self.uri)
 		else:
 			return "<%s>" % (self.uri)
-
-
-class URIAdmin(admin.ModelAdmin):
-	pass
 
 
 
@@ -328,7 +322,7 @@ class Entry(models.Model, RdfClass):
 	Returns array of entries that are children of this one in the tree
 	"""
 	def get_sub_entries(self):
-		return [] #TODO
+		return Entry.objects.filter(parent=self)
 		
 	"""
 	Returns path from Root to this entry
@@ -434,6 +428,12 @@ class EntryReference(models.Model):
 	subject = models.ForeignKey(Entry, related_name='ref_subject')
 	object = models.ForeignKey(Entry, related_name='ref_object')
 	relation = models.CharField(max_length=30, choices=ENTRY_RELATION_TYPES)
+	
+	"""
+	to-string representation
+	"""
+	def __unicode__(self):
+		return "%s (%s) %s" % (self.subject.get_label(), self.relation, self.object.get_label())
 
 """
 M2M relation based on triples concept
