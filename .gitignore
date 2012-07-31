@@ -1,0 +1,5 @@
+.env
+.idea
+build
+*.pyc
+atlassian-ide-plugin.xml

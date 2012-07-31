@@ -13,8 +13,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'openvocabulary',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'ov',                      # Or path to database file if using sqlite3.
         'USER': 'ov',                      # Not used with sqlite3.
         'PASSWORD': 'ov',                  # Not used with sqlite3.
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -94,7 +94,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.admin',
     'ov_django.ov',
-#    'haystack',
+    'haystack',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -107,10 +107,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # ----------------- haystack configuration --------------
 
 HAYSTACK_SITECONF = 'ov_django.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'whoosh'
+HAYSTACK_SEARCH_ENGINE = 'solr'
 HAYSTACK_WHOOSH_PATH = os.path.join(os.path.dirname(__file__), 'index').replace('\\','/'),
+HAYSTACK_SOLR_URL = 'http://localhost:8983/solr'
 
-# ---------------- idbuk configuration ------------------
+# ---------------- ov configuration ------------------
 
-BASE_URL_PATH = "http://localhost:8001/"
+BASE_URL_PATH = "http://localhost:8000/"
 BASE_OV_PATH = "http://www.openvocabulary.info/"

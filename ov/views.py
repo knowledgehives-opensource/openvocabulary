@@ -14,22 +14,21 @@ from django.core import serializers
 from ov_django.settings import BASE_URL_PATH, BASE_OV_PATH
 from ov_django.ov.models import *
 from ov_django import settings
-from ov_django.ov.constants import CONTENT_TYPE_TO_SERIALIZATION
 from simplejson import dumps
 
 
 
-"""
-Welcome the user
-"""
 def welcome(request):
+    """
+    Welcome the user
+    """
     state = "welcome"
     return render_to_response('basic/welcome.html', locals())
 
-"""
-List/filter vocabularies
-"""
 def list_vocabularies(request):
+    """
+    List/filter vocabularies
+    """
     state = "vocabularies"
     tag = request.GET.get('tag', None)
     type = request.GET.get('type', None)
@@ -51,9 +50,9 @@ def list_vocabularies(request):
         page = int(request.GET.get('page', 0))
         pstart = 10*page
         pend = 10*(page+1)-1
-	pagep1 = page+1
+        pagep1 = page+1
         pagem1 = page-1
-	pten = 10*(page+1)
+        pten = 10*(page+1)
         for result in results:
             result.roots = result.get_root_entries()[pstart:pend]
     else:
@@ -122,13 +121,13 @@ def rdfdata(request, path):
 def search_label(request, label):
     "part of REST API - searches OV for entries with given label (and language); uri pattern: search/label/<label_to_search>"
     accept_encoding = request.META.get('HTTP_ACCEPT_ENCODING', None)
-    if accept_encoding == None:
+    if accept_encoding is None:
         accept_encoding = settings.DEFAULT_SERIALIZATION_TYPE
         
     if request.method == "GET":
         lang = request.META["HTTP_LANG"]
         results = Entry.objects.filter(Q(lexical_form__iexact=label) | Q(label__iexact=label)).filter(context__lang=lang)
-        if(results):
+        if results:
             #response = HttpResponse(serializers.serialize(CONTENT_TYPE_TO_SERIALIZATION[accept_encoding], results, fields=('label', 'description', 'uri', 'context_uri')), content_type=accept_encoding)
             response = HttpResponse(dumps(results[0].uri), content_type=accept_encoding)
         else:
