@@ -92,10 +92,10 @@ def lookup_concept(request, path=None):
     return render_to_response('basic/lookup.html', locals())#, mimetype="application/xhtml+xml")
 
 
-"""
-Redirects to appropriate service
-"""    
 def redirect(request, path):
+    """
+    Redirects to appropriate service
+    """
     accept = request.META.get("HTTP_ACCEPT", "")
     needsrdf = re.match("^.*application\/x-turtle.*$", accept) 
     prefix = "data/" if needsrdf else "html/"           
@@ -106,10 +106,10 @@ def redirect(request, path):
     return response
 
 
-"""
-Responds with RDF representation of the resource
-"""
 def rdfdata(request, path):
+    """
+    Responds with RDF representation of the resource
+    """
     uri = BASE_OV_PATH + path
     result = Entry.objects.lookup(uri) if id != '' else None
     if result:
@@ -128,7 +128,6 @@ def search_label(request, label):
         lang = request.META["HTTP_LANG"]
         results = Entry.objects.filter(Q(lexical_form__iexact=label) | Q(label__iexact=label)).filter(context__lang=lang)
         if results:
-            #response = HttpResponse(serializers.serialize(CONTENT_TYPE_TO_SERIALIZATION[accept_encoding], results, fields=('label', 'description', 'uri', 'context_uri')), content_type=accept_encoding)
             response = HttpResponse(dumps(results[0].uri), content_type=accept_encoding)
         else:
             response = HttpResponseNotFound();

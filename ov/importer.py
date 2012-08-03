@@ -24,16 +24,14 @@ from django.utils.encoding import smart_unicode
 Reads configuration from the RDF triples
 """
 class TriplesParser:
-    """
-    <http://dmoz.org/rdf/narrow1>
-    <http://dmoz.org/rdf/narrow2>
-    <http://dmoz.org/rdf/narrow>
-    <http://www.w3.org/2004/02/skos/core#broader>
-    <http://www.w3.org/2004/02/skos/core#inScheme>
-    <http://www.w3.org/2004/02/skos/core#narrower>
-    <http://www.w3.org/2006/03/wn/wn20/schema/containsWordSense>
-    """    
-    _actions = { 
+    #    <http://dmoz.org/rdf/narrow1>
+    #    <http://dmoz.org/rdf/narrow2>
+    #    <http://dmoz.org/rdf/narrow>
+    #    <http://www.w3.org/2004/02/skos/core#broader>
+    #    <http://www.w3.org/2004/02/skos/core#inScheme>
+    #    <http://www.w3.org/2004/02/skos/core#narrower>
+    #    <http://www.w3.org/2006/03/wn/wn20/schema/containsWordSense>
+    _actions = {
         'http://www.w3.org/2004/02/skos/core#inScheme'    : 'set_scheme',
         'http://www.w3.org/2004/02/skos/core#broader'     : 'add_broader',
         'http://www.w3.org/2004/02/skos/core#narrower'    : 'add_narrower',
@@ -43,54 +41,47 @@ class TriplesParser:
         'http://www.openvocabulary.info/ontology/x-broader' : 'add_broader',
         'http://www.openvocabulary.info/ontology/x-narrower' : 'add_narrower',
                 }
-    """
-    <http://www.w3.org/2006/03/wn/wn20/schema/containsWordSense>
-    <http://www.w3.org/2006/03/wn/wn20/schema/word>
-    <http://www.openvocabulary.info/ontology/hasMeaning>
-    """    
-    _entry_actions = { 
+    #    <http://www.w3.org/2006/03/wn/wn20/schema/containsWordSense>
+    #    <http://www.w3.org/2006/03/wn/wn20/schema/word>
+    #    <http://www.openvocabulary.info/ontology/hasMeaning>
+    _entry_actions = {
         'http://www.w3.org/2006/03/wn/wn20/schema/containsWordSense' : 'word_senses', #-in_synset ...
         'http://www.w3.org/2006/03/wn/wn20/schema/word'              : 'words',
         'http://www.openvocabulary.info/ontology/hasMeaning'         : 'meanings',
                 }
-    """
-    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
-    """
-    _uri_actions = { 
+    #    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
+    _uri_actions = {
         'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' : 'types',
                    }
-    """
-    <http://www.w3.org/2004/02/skos/core#prefLabel>
-    <http://www.w3.org/2000/01/rdf-schema#label>
-    <http://www.w3.org/2004/02/skos/core#definition>
-    <http://purl.org/dc/elements/1.0/Title>
-    <http://purl.org/dc/elements/1.0/Description>
-    <http://www.w3.org/2006/03/wn/wn20/schema/gloss>
-    <http://www.w3.org/2006/03/wn/wn20/schema/synsetId>
-    <http://www.w3.org/2006/03/wn/wn20/schema/lexicalForm>
-    <http://www.w3.org/2006/03/wn/wn20/schema/tagCount>
-    """
-    _literal_actions = { 
+    #    <http://www.w3.org/2004/02/skos/core#prefLabel>
+    #    <http://www.w3.org/2000/01/rdf-schema#label>
+    #    <http://www.w3.org/2004/02/skos/core#definition>
+    #    <http://purl.org/dc/elements/1.0/Title>
+    #    <http://purl.org/dc/elements/1.0/Description>
+    #    <http://www.w3.org/2006/03/wn/wn20/schema/gloss>
+    #    <http://www.w3.org/2006/03/wn/wn20/schema/synsetId>
+    #    <http://www.w3.org/2006/03/wn/wn20/schema/lexicalForm>
+    #    <http://www.w3.org/2006/03/wn/wn20/schema/tagCount>
+    _literal_actions = {
         'http://www.w3.org/2000/01/rdf-schema#label'      : 'label',
         'http://www.w3.org/2004/02/skos/core#prefLabel'   : 'label',
         'http://purl.org/dc/elements/1.0/Title'           : 'label',
         'http://www.openvocabulary.info/ontology/wordType': 'type_tag',
         'http://www.w3.org/2004/02/skos/core#definition'  : 'description',
         'http://purl.org/dc/elements/1.0/Description'     : 'description',
+        'http://www.w3.org/2000/01/rdf-schema#comment'    : 'description',
         'http://www.w3.org/2006/03/wn/wn20/schema/gloss'  : 'gloss',
         'http://www.w3.org/2006/03/wn/wn20/schema/synsetId' : 'synset_id',
         'http://www.w3.org/2006/03/wn/wn20/schema/lexicalForm' : 'lexical_form',
         'http://www.w3.org/2006/03/wn/wn20/schema/tagCount' : 'tag_count',
         'http://www.w3.org/2006/03/wn/wn20/schema/frame' : 'frame',
                        }
-    """
-    <http://www.w3.org/2004/02/skos/core#related>
-    <http://dmoz.org/rdf/symbolic1>
-    <http://dmoz.org/rdf/symbolic2>
-    <http://dmoz.org/rdf/symbolic>
-    <http://www.w3.org/2006/03/wn/wn20/schema/hyponymOf>
-    <http://www.w3.org/2006/03/wn/wn20/schema/similarTo>
-    """
+    #    <http://www.w3.org/2004/02/skos/core#related>
+    #    <http://dmoz.org/rdf/symbolic1>
+    #    <http://dmoz.org/rdf/symbolic2>
+    #    <http://dmoz.org/rdf/symbolic>
+    #    <http://www.w3.org/2006/03/wn/wn20/schema/hyponymOf>
+    #    <http://www.w3.org/2006/03/wn/wn20/schema/similarTo>
     _relations_actions = {
         'http://dmoz.org/rdf/related'                   : 'similarTo',
         'http://dmoz.org/rdf/symbolic'                  : 'synonym',
@@ -116,20 +107,18 @@ class TriplesParser:
         'http://www.w3.org/2006/03/wn/wn20/schema/classifiedByUsage' : 'classifiedByUsage',
         'http://www.openvocabulary.info/ontology/x-antonym' : 'antonym',
     }
-    """
-    <http://www.w3.org/2004/02/skos/core#related>
-    <http://www.w3.org/2000/01/rdf-schema#seeAlso>,
-    <http://purl.org/dc/elements/1.0/charset>,
-    <http://dmoz.org/rdf/newsGroup>,
-    <http://dmoz.org/rdf/letterbar>
-    <http://dmoz.org/rdf/lastUpdate>
-    <http://dmoz.org/rdf/editor>
-    <http://dmoz.org/rdf/catid>
-    <http://dmoz.org/rdf/altlang>
-    <http://www.openvocabulary.info/ontology/x-antonym>
-    <http://www.openvocabulary.info/ontology/x-broader>
-    <http://www.openvocabulary.info/ontology/x-narrower>
-    """
+    #    <http://www.w3.org/2004/02/skos/core#related>
+    #    <http://www.w3.org/2000/01/rdf-schema#seeAlso>,
+    #    <http://purl.org/dc/elements/1.0/charset>,
+    #    <http://dmoz.org/rdf/newsGroup>,
+    #    <http://dmoz.org/rdf/letterbar>
+    #    <http://dmoz.org/rdf/lastUpdate>
+    #    <http://dmoz.org/rdf/editor>
+    #    <http://dmoz.org/rdf/catid>
+    #    <http://dmoz.org/rdf/altlang>
+    #    <http://www.openvocabulary.info/ontology/x-antonym>
+    #    <http://www.openvocabulary.info/ontology/x-broader>
+    #    <http://www.openvocabulary.info/ontology/x-narrower>
     _triples_actions = [
         'http://www.w3.org/2004/02/skos/core#related',
         'http://www.w3.org/2000/01/rdf-schema#seeAlso',
@@ -141,15 +130,13 @@ class TriplesParser:
         'http://dmoz.org/rdf/catid',
         'http://dmoz.org/rdf/altlang'
     ]
-    """
-    <http://www.w3.org/2002/07/owl#allValuesFrom>
-    <http://www.w3.org/2002/07/owl#cardinality>
-    <http://www.w3.org/2002/07/owl#disjointWith>
-    <http://www.w3.org/2002/07/owl#inverseOf>
-    <http://www.w3.org/2002/07/owl#onProperty>
-    <http://www.w3.org/2002/07/owl#someValuesFrom>
-    <http://www.w3.org/2002/07/owl#unionOf>
-    """
+    #    <http://www.w3.org/2002/07/owl#allValuesFrom>
+    #    <http://www.w3.org/2002/07/owl#cardinality>
+    #    <http://www.w3.org/2002/07/owl#disjointWith>
+    #    <http://www.w3.org/2002/07/owl#inverseOf>
+    #    <http://www.w3.org/2002/07/owl#onProperty>
+    #    <http://www.w3.org/2002/07/owl#someValuesFrom>
+    #    <http://www.w3.org/2002/07/owl#unionOf>
     _skip_actions = [
         'http://www.w3.org/2002/07/owl#allValuesFrom',
         'http://www.w3.org/2002/07/owl#cardinality',
@@ -164,21 +151,18 @@ class TriplesParser:
         'http://www.w3.org/2000/01/rdf-schema#subPropertyOf',
         'http://www.w3.org/1999/02/22-rdf-syntax-ns#first',
         'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest',
-        'http://www.w3.org/2000/01/rdf-schema#comment',
         #<http://www.w3.org/2000/01/rdf-schema#label>
     ]
     
-    """
-    216	nadużyw.
-    396	poet.
-    549	oficj.
-    887	specjalist.
-    957	wulg.
-    1155	żart.
-    2422	książk.
-    3128	przestarz.
-    10225	pot.
-    """
+    #    216	nadużyw.
+    #    396	poet.
+    #    549	oficj.
+    #    887	specjalist.
+    #    957	wulg.
+    #    1155	żart.
+    #    2422	książk.
+    #    3128	przestarz.
+    #    10225	pot.
     _word_types = {
         u'nadużyw' : 'overused',
         u'poet' : 'poetic',
@@ -191,9 +175,7 @@ class TriplesParser:
         u'pot' : 'colloquial',
     }
     
-    """
-    Pattern for processing triples
-    """
+    #    Pattern for processing triples
     _triple = re.compile(r"""\s*[<](?P<subject>[^>]+)[>]      # subject
                              \s+
                              [<](?P<predicate>[^>]+)[>]    # predicate 
@@ -201,51 +183,52 @@ class TriplesParser:
                              (?:(?:[<](?P<obj_uri>[^>]+)[>])|    # object uri
                                 (?:["'](?P<obj_lit>.+)['"]      # object literal
                                    (?:[@](?P<obj_lang>.+))?   # object literal lang tag
-                                   (?:^^(?P<obj_type>.+))?))  # object literal type
+                                   (?:\^\^(?P<obj_type>.+))?))  # object literal type
                              \s*[.]\s*$
                              """, re.X)
-    """
-    Pattern for extracting label and type (used in OpenVocabulary wordmeanings)
-    """
-    _type_tag = re.compile(r"""(?P<label>.+) #core label 
+
+    #    Pattern for extracting label and type (used in OpenVocabulary wordmeanings)
+    _type_tag = re.compile(r"""(?P<label>.+) #core label
                             \s+\(
                             (?P<type>\S+)[.] #type of word
                             \)
                             """, re.X)
 
-    """
-    Initialize processor - with alternative URIs for labels and narrowers
-    """
     def __init__(self):
+        """
+        Initialize processor - with alternative URIs for labels and narrowers
+        """
         pass
     
 
-    """
-    Read in given file - line by line
-    """
     def read(self, file_name):
+        """
+        Read in given file - line by line
+        """
         file = codecs.open(file_name, encoding='utf-8', mode="r")
         i = 0
         size = 100
         date = time.mktime(datetime.datetime.utcnow().timetuple())
         for line in file:
-            self.process_line(line.rstrip())
-            i += 1
-            if not i % size:
-                now_date = time.mktime(datetime.datetime.utcnow().timetuple())
-                db.reset_queries()
-                gc.collect()
-                print "[INFO] importing next %d lines [%d, %d]" % (size, i, now_date - date)
-                date = now_date
+            line = line.rstrip()
+            if line:
+                self.process_line(line)
+                i += 1
+                if not i % size:
+                    now_date = time.mktime(datetime.datetime.utcnow().timetuple())
+                    db.reset_queries()
+                    gc.collect()
+                    print "[INFO] importing next %d lines [%d, %d]" % (size, i, now_date - date)
+                    date = now_date
         # update is_root column to 1 for all root entries:
         for (orphan,) in Entry.objects.all().filter(types__uri="http://www.w3.org/2006/03/wn/wn20/schema/Synset").filter(parent__isnull=True).values_list("id"):
             if Entry.objects.filter(parent__id=orphan):
                 Entry.objects.filter(id=orphan).update(is_root=1)
 
-    """
-    Process single line entry
-    """
     def process_line(self, line):
+        """
+        Process single line entry
+        """
         m = self._triple.match(line)
         
         if not m:
@@ -259,7 +242,7 @@ class TriplesParser:
             daction = gdict['predicate']
             
             if daction in self._skip_actions:
-#                print "[INFO] skipping line ", line
+                print "[INFO] skipping line ", line
                 return
                 
             # get subject Entry
@@ -516,10 +499,10 @@ class TriplesParser:
             return None
     
     
-    """
-    retrieves Entry object based on given URI
-    """
     def _get_entry(self, obj):
+        """
+        retrieves Entry object based on given URI
+        """
         if 'uri' in obj and obj['uri']:
             ouri = self._encode(obj['uri'])
             oentry, created = Entry.objects.get_or_create(uri=ouri) #lookup(ouri)
@@ -535,10 +518,10 @@ class TriplesParser:
         print "[WARNING] cannot retrieve a non existing object: " + str(obj)
         return None
     
-    """
-    Encodes \u???? into utf-8 text 
-    """
     def _encode(self, text):
+        """
+        Encodes \u???? into utf-8 text
+        """
         if text and "\u" in text:
             t = eval('u"%s"' % text.replace('"', '\"'))
             text = t.encode('utf-8')

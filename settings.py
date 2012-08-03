@@ -114,4 +114,4 @@ HAYSTACK_SOLR_URL = 'http://localhost:8983/solr'
 # ---------------- ov configuration ------------------
 
 BASE_URL_PATH = "http://localhost:8000/"
-BASE_OV_PATH = "http://www.openvocabulary.info/"
+BASE_OV_PATH = BASE_URL_PATH #"http://www.openvocabulary.info/"
