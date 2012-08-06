@@ -38,24 +38,24 @@ from piston.resource import Resource
 from ov_django.ov.handlers import *
 
 urlpatterns = patterns('ov_django.ov.views',
-    (r'^$', 'welcome'),
-    (r'vocabularies[/]?$', 'list_vocabularies'),
-    (r'vocabularies/search$', 'search_concepts'),
-    (r'vocabularies/lookup$', 'lookup_concept'),
-    (r'html/(?P<path>(?:taxonomies|thesauri)[/].+)$', 'lookup_concept'),
-    (r'data/(?P<path>(?:taxonomies|thesauri)[/].+)', 'rdfdata'),
-    (r'(?P<path>(?:taxonomies|thesauri)[/].+)', 'redirect'),
+	(r'^$', 'welcome'),
+	(r'vocabularies[/]?$', 'list_vocabularies'),
+	(r'vocabularies/search$', 'search_concepts'),
+	(r'vocabularies/lookup$', 'lookup_concept'),
+	(r'html/(?P<path>(?:taxonomies|thesauri)[/].+)$', 'lookup_concept'),
+	(r'data/(?P<path>(?:taxonomies|thesauri)[/].+)', 'rdfdata'),
+	(r'(?P<path>(?:taxonomies|thesauri)[/].+)', 'redirect'),
 )
 
-"""
-A work-around for allowing REST POST, PUT and DELETE methods (normally they would be
-disabled by Django's cross-site request forgery discovery module (at least that's what they
-are writing on the Internet - http://www.robertshady.com/content/creating-very-basic-api-using-python-django-and-piston) 
-"""
 class CsrfExemptResource(Resource):
-    def __init__(self, handler, authentication=None):
-        super(CsrfExemptResource, self).__init__(handler, authentication)
-        self.csrf_exempt = getattr(self.handler, 'csrf_exempt', True)
+	"""
+	A work-around for allowing REST POST, PUT and DELETE methods (normally they would be
+	disabled by Django's cross-site request forgery discovery module (at least that's what they
+	are writing on the Internet - http://www.robertshady.com/content/creating-very-basic-api-using-python-django-and-piston)
+	"""
+	def __init__(self, handler, authentication=None):
+		super(CsrfExemptResource, self).__init__(handler, authentication)
+		self.csrf_exempt = getattr(self.handler, 'csrf_exempt', True)
 
 searchSynsetByWord = CsrfExemptResource(SearchSynsetByWordHandler)
 searchAllSynsetsByWord = CsrfExemptResource(SearchAllSynsetsByWordHandler)
@@ -70,10 +70,10 @@ The default response serialization is JSON. To use different serialization add t
 { 'emitter_format': 'xml' }
 """
 urlpatterns += patterns('',
-    (r'search/synset/(?P<word>.+)[/]?$', searchSynsetByWord),
-    (r'search/allsynsets/(?P<word>.+)[/]?$', searchAllSynsetsByWord),
-    (r'search/related/(?P<id>\d+)[/]?$', searchRelated),
-    (r'get/id/(?P<id>\d+)[/]?$', getSynsetForId),
-    (r'get/path/(?P<id>\d+)[/]?$', getPathForId),
-    (r'get/uri[/]?$', getSynsetForUri),
+	(r'search/synset/(?P<word>.+)[/]?$', searchSynsetByWord),
+	(r'search/allsynsets/(?P<word>.+)[/]?$', searchAllSynsetsByWord),
+	(r'search/related/(?P<id>\d+)[/]?$', searchRelated),
+	(r'get/id/(?P<id>\d+)[/]?$', getSynsetForId),
+	(r'get/path/(?P<id>\d+)[/]?$', getPathForId),
+	(r'get/uri[/]?$', getSynsetForUri),
 )
