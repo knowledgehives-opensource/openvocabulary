@@ -169,10 +169,10 @@ class TriplesParser:
         u'oficj' : 'official',
         u'specjalist' : 'specialized',
         u'wulg' : 'vulgarism',
-        u'żart' : 'facetiously',
+        u'żart' : 'facetious',
         u'książk' : 'literary',
         u'przestarz' : 'obsolete',
-        u'pot' : 'colloquial',
+        u'pot' : 'colloquialism',
     }
     
     #    Pattern for processing triples

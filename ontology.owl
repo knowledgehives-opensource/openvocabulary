@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+  <!ENTITY skos "http://www.w3.org/2004/02/skos/core#">
+  <!ENTITY ontology "http://www.openvocabulary.info/ontology/">
+  <!ENTITY owl "http://www.w3.org/2002/07/owl#">
+  <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+  <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+]>
+<rdf:RDF xml:base="&ontology;"
+		 xmlns:skos="&skos;"
+         xmlns:owl="&owl;"
+         xmlns:rdf="&rdf;"
+         xmlns:rdfs="&rdfs;">
+
+<!-- Ontology Information -->
+  <owl:Ontology rdf:about=""
+                rdfs:label="OV ontology">
+    <rdfs:comment>OV ontology extends SKOS and WordNet ontologies with few missing modeling concepts found amoung other at the OpenVocabulary thesauri</rdfs:comment>
+    <owl:imports>
+      <owl:Ontology rdf:about="&skos;"/>
+    </owl:imports>
+  </owl:Ontology>
+
+<!-- Classes -->
+  <owl:Class rdf:about="WordType"
+             rdfs:label="Word Type">
+    <rdfs:comment>This class defines types of words like overused, poetic, etc</rdfs:comment>
+  </owl:Class>
+
+<!-- Annotation Properties -->
+  <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+  <owl:AnnotationProperty rdf:about="&rdfs;label"/>
+
+<!-- Object Properties -->
+  <owl:ObjectProperty rdf:about="x-antonym"
+                      rdfs:label="antonym">
+    <rdfs:comment>Points to an concept of a contrary meaning</rdfs:comment>
+    <rdfs:domain rdf:resource="skos:Concept" />
+    <rdfs:range rdf:resource="skos:Concept" />
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="hasMeaning"
+                      rdfs:label="has meaning">
+    <rdfs:comment>Indicates a (many-to-many) relation between an abstract concept and a synset that bears the meaning of this concept</rdfs:comment>
+    <rdfs:domain rdf:resource="skos:Concept" />
+    <rdfs:range rdf:resource="skos:Concept" />
+	<rdfs:subPropertyOf rdf:resource="&skos;related"/>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="wordType"
+                      rdfs:label="type of word">
+    <rdfs:comment>Indicates the type of the given word (or term level), e.g., poetic, colloquialism</rdfs:comment>
+    <rdfs:domain rdf:resource="skos:Concept" />
+    <rdfs:range rdf:resource="WordType" />
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="x-broader"
+                      rdfs:label="broader">
+    <rdfs:comment>Use to model broader relations that were infered from a source which did not provide clear indications on the broader/narrower relations.</rdfs:comment>
+    <rdfs:domain rdf:resource="skos:Concept" />
+    <rdfs:range rdf:resource="skos:Concept" />
+	<rdfs:subPropertyOf rdf:resource="&skos;related"/>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="x-narrower"
+                      rdfs:label="barrower">
+    <rdfs:comment>Use to model narrower relations that were infered from a source which did not provide clear indications on the broader/narrower relations</rdfs:comment>
+    <rdfs:domain rdf:resource="skos:Concept" />
+    <rdfs:range rdf:resource="skos:Concept" />
+	<rdfs:subPropertyOf rdf:resource="&skos;related"/>
+  </owl:ObjectProperty>
+
+<!-- Instances -->
+  <WordType rdf:about="IColloquialism"
+                      rdfs:label="Colloquialism">
+    <rdfs:comment>Tag word senses that are used in a non-official context</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="ICrude"
+             rdfs:label="Crude">
+    <rdfs:comment>Tag word senses that may have a rude or offensive meaning, especially in the sexual context</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="IFecetious"
+                      rdfs:label="Facetious">
+    <rdfs:comment>Tag word meanings that are used in a non-serious, humor context</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="ILiterary"
+                      rdfs:label="Literary">
+    <rdfs:comment>Tag word senses that are used in a literarture or other literary context</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="IObsolute"
+                      rdfs:label="Obsolute">
+    <rdfs:comment>Tag word senses that are very uncommon in the contemprary language because they are mostly out of use</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="IOfficial"
+                      rdfs:label="Official">
+    <rdfs:comment>Tag word senses that are mostly used in the official language</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="IOverused"
+                      rdfs:label="Overused">
+    <rdfs:comment>Tag word meanins that are used too often</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="IPoetic"
+                      rdfs:label="Poetic">
+    <rdfs:comment>Tag word senses that are mostly used in the poetic context</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="ISophisticated"
+             rdfs:label="Sophisticated">
+    <rdfs:comment>Tag word senses of a very sophisticated meaning</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="ISpecialized"
+                      rdfs:label="Specialized">
+    <rdfs:comment>Tag word senses that are part of a specialized vocabulary</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="ITechnical"
+                      rdfs:label="Technical">
+	<rdfs:comment>Tag word senses of a technical meaning</rdfs:comment>
+  </WordType>
+
+  <WordType rdf:about="IVulgarism"
+             rdfs:label="Vulgarism">
+    <rdfs:comment>Tag word senses that can be offensive or rude</rdfs:comment>
+  </WordType>
+</rdf:RDF>

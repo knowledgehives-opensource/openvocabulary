@@ -208,20 +208,3 @@ def type_to_string(type):
            
           
                     
-"""
-@register.inclusion_tag('books_creator_template.html')    
-def books_for_creator(creator):
-    Filters books for given cretor
-    return {'books': creator.get_manifestations()}    
-
-@register.inclusion_tag('books_publisher_template.html')    
-def books_for_publisher(publisher):
-    Filters books for given publisher
-    return {'books': publisher.get_manifestations()}    
-
-@register.inclusion_tag('books_expression_template.html')    
-def books_for_expression(expression):
-    Filters books for given expression
-    return {'books': expression.get_manifestations()}    
-"""
-    
