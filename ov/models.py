@@ -344,7 +344,11 @@ class Entry(models.Model, RdfClass):
 		return Entry.objects.filter(words__contains=self)
 
 	def get_label(self):
-		return self.lexical_form if self.lexical_form else self.label
+		if self.lexical_form:
+			return self.lexical_form
+		if self.label:
+			return self.label
+		return self.uri
 
 	def get_description(self):
 		if self.description:
@@ -376,6 +380,8 @@ class Entry(models.Model, RdfClass):
 			'type_tag' 	    : {'uri' : 'ov:wordType', 'uri_pattern': 'ov:I%s' },
 		    'word_senses'   : {'uri' : 'wn20schema:containsWordSense', 'condition': ('in_synset', None)},
 		    'in_synset'     : {'uri' : 'wn20schema:inSynset'},
+		    'parent'        : {'uri' : [ RdfURI('skos:broader') ]},
+		    'childOf'       : {'uri' : [ RdfURI('skos:narrower')]},
 			#'is_root' 	: {'uri' : 'dcel:language' },
 			#'relations' 	: {'uri' : 'skos:inScheme' },
 			#'meanings' 	: {'uri' : 'skos:inScheme' },

@@ -24,31 +24,31 @@
 				<tr><th colspan='2'>Metadata</th></tr>
 				<tr><td>URI:</td><td>{{ entry.uri }}</td></tr>
 				{% if entry.scheme %}
-					<tr><td>In&nbsp;scheme:</td><td><a href="/vocabularies?uri={{ entry.context.uri }}" title="Show scheme {{ entry.context.label }}">{{ entry.context }}</a></td></tr>					
+					<tr><td>in&nbsp;scheme:</td><td><a href="/vocabularies?uri={{ entry.context.uri }}" title="Show scheme {{ entry.context.label }}">{{ entry.context }}</a></td></tr>
 				{% endif %}
 				{% if entry.label  %}
-					<tr><td>Label:</td><td>{{ entry.label }}</td></tr>
+					<tr><td>label:</td><td>{{ entry.label }}</td></tr>
 				{% endif %}
 				{% if entry.lexical_form  %}
-					<tr><td>Lexical&nbsp;form:</td><td>{{ entry.lexical_form }}</td></tr>
+					<tr><td>lexical&nbsp;form:</td><td>{{ entry.lexical_form }}</td></tr>
 				{% endif %}
 				{% if entry.frame %}
-					<tr><td>Frame:</td><td>{{ entry.frame }}</td></tr>
+					<tr><td>frame:</td><td>{{ entry.frame }}</td></tr>
 				{% endif %}
 				{% if entry.pos %}
-					<tr><td>Part&nbsp;of&nbsp;speech:</td><td>{{ entry.pos|expand_dict:'DICT_PART_OF_SPEECH' }}</td></tr>
+					<tr><td>part&nbsp;of&nbsp;speech:</td><td>{{ entry.pos|expand_dict:'DICT_PART_OF_SPEECH' }}</td></tr>
 				{% endif %}
 				{% if entry.type_tag %}
-					<tr><td>Kind&nbsp;of&nbsp;entry:</td><td>{{ entry.type_tag|capfirst }}</td></tr>
+					<tr><td>kind&nbsp;of&nbsp;entry:</td><td>{{ entry.type_tag|capfirst }}</td></tr>
 				{% endif %}
 				{% if entry.in_synset %}
-					<tr><td>Is&nbsp;in&nbsp;synset:</td><td>{{ entry.in_synset|create_entry_anchor:'Show related synset' }}</td></tr>
+					<tr><td>is&nbsp;in&nbsp;synset:</td><td>{{ entry.in_synset|create_entry_anchor:'Show related synset' }}</td></tr>
 				{% endif %}
 				{% if entry.tag_count %}
-					<tr><td>Tag&nbsp;count:</td><td>{{ entry.tag_count }}</td></tr>
+					<tr><td>tag&nbsp;count:</td><td>{{ entry.tag_count }}</td></tr>
 				{% endif %}
 				{% if entry.synset_id %}
-					<tr><td>Synset&nbsp;id:</td><td>{{ entry.synset_id }}</td></tr>
+					<tr><td>synset&nbsp;id:</td><td>{{ entry.synset_id }}</td></tr>
 				{% endif %}
 				
 			</table>
@@ -58,12 +58,21 @@
 			<table border="0" cellspacing="5" cellpadding="5">
 				<tr><th colspan='2'>Relations</th></tr>
 				{% if entry.parent %}
-				<tr><td>Parent&nbsp;concept:</td><td>{{ entry.parent|create_entry_anchor:'Show parent concept' }}</td></tr>
+				<tr><td>broader&nbsp;concept:</td><td>{{ entry.parent|create_entry_anchor:'Show parent concept' }}</td></tr>
 				{% endif %}
-				
+				{% for narrower in entry.childOf.all %}
+					{% if forloop.first %}
+						<tr>
+							<td rowspan="{{ entry.childOf.all|length }}">narrower&nbsp;concepts:</td>
+							{% else %}
+						<tr>
+					{% endif %}
+				<td>{{ narrower|create_entry_anchor:'Show narrower' }}</td>
+				</tr>
+				{% endfor %}
 				{% for type in entry.types.all  %}
 					{% if forloop.first %}
-					<tr><td rowspan="{{ entry.types.all|length }}">Type&nbsp;of&nbsp;concept:</td>
+					<tr><td rowspan="{{ entry.types.all|length }}">type&nbsp;of&nbsp;concept:</td>
 					{% else %}
 					<tr>
 					{% endif %}
@@ -77,16 +86,16 @@
 				{% endif %}
 				{% for meaning in entry.meanings.all  %}
 					{% if forloop.first %}
-					<tr><td rowspan="{{ entry.meanings.all|length }}">Meanings:</td>
+					<tr><td rowspan="{{ entry.meanings.all|length }}">meanings:</td>
 					{% else %}
 					<tr>
 					{% endif %}
-					<td>{{ ref.object|create_entry_anchor:'Show relation' }}</td>
+					<td>{{ meaning|create_entry_anchor:'Show relation' }}</td>
 					</tr>
 				{% endfor %}
 				{% for word in entry.words.all %}
 					{% if forloop.first %}
-					<tr><td rowspan="{{ entry.words.all|length }}">Related&nbsp;words:</td>
+					<tr><td rowspan="{{ entry.words.all|length }}">related&nbsp;words:</td>
 					{% else %}
 					<tr>
 					{% endif %}
@@ -95,7 +104,7 @@
 				{% endfor %}
 				{% for word_sense in entry.word_senses.all %}
 					{% if forloop.first %}
-					<tr><td rowspan="{{ entry.word_senses.all|length }}">Related&nbsp;word&nbsp;senses:</td>
+					<tr><td rowspan="{{ entry.word_senses.all|length }}">related&nbsp;word&nbsp;senses:</td>
 					{% else %}
 					<tr>
 					{% endif %}
