@@ -168,6 +168,9 @@ class URI(models.Model):
 	label = models.CharField(max_length=100, null=True, blank=True)
 	objects = URIManager()
 
+	def get_uri(self):
+		return self.uri
+
 	"""
 	to-string representation
 	"""
@@ -351,6 +354,15 @@ class Entry(models.Model, RdfClass):
 			return self.label
 		return self.uri
 
+	def list_related(self, prop="http://www.w3.org/2004/02/skos/core#related"):
+		"""
+		Lists objects related via given property
+		"""
+		return [e.object for e in Triple.objects.filter(subject=self,
+		                                         predicate__uri=prop)
+												.order_by("predicate")]
+
+
 	def get_description(self):
 		if self.description:
 			return self.description
@@ -383,6 +395,7 @@ class Entry(models.Model, RdfClass):
 		    'in_synset'     : {'uri' : 'wn20schema:inSynset'},
 		    'parent'        : {'uri' : [ RdfURI('skos:broader') ]},
 		    'childOf'       : {'uri' : [ RdfURI('skos:narrower')]},
+		    'list_related'  : {'uri' : 'skos:related'},
 			#'is_root' 	: {'uri' : 'dcel:language' },
 			#'relations' 	: {'uri' : 'skos:inScheme' },
 			#'meanings' 	: {'uri' : 'skos:inScheme' },

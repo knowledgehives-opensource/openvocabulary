@@ -91,8 +91,10 @@ class RdfConcept(object):
 		rdfprops = rdfMeta[prop]
 		# -- get the value of this property
 		dbval = getattr(self, rdfprops["property"]) if "property" in rdfprops else getattr(self, prop)
+		if callable(dbval):
+			rval = self.objects_as_rdf_list(dbval())
 		# --- if this is a relation type of property
-		if hasattr(dbval, 'all') and callable(dbval.all):
+		elif hasattr(dbval, 'all') and callable(dbval.all):
 			rval = self.objects_as_rdf_list(dbval.all())
 		# --- if this is a literal ?
 		else:
