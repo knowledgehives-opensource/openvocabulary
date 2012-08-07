@@ -47,7 +47,7 @@ class ContextManager(models.Manager):
 #		cursor.execute("""
 #			SELECT DISTINCT lang
 #			FROM ov_context""")
-		langs = Context.objects.values('lang').distinct(True).order_by()
+		langs = Context.objects.filter(visible=True).values('lang').distinct(True).order_by()
 		return [lang['lang'] for lang in langs]
 
 """
@@ -69,6 +69,7 @@ class Context(models.Model, RdfClass):
 	lang = models.CharField(max_length=10, default='en')
 	tags = models.ManyToManyField(Tag, related_name='tag', symmetrical=False, blank=True, null=True)
 	term_uri_pattern = models.CharField(max_length=500, blank=True, null=True, verbose_name="uri pattern")
+	visible = models.BooleanField(default=True)
 	# additional_properties
 	# tree_properties
 	objects = ContextManager()

@@ -56,7 +56,7 @@ def list_vocabularies(request):
 		for result in results:
 			result.roots = result.get_root_entries()[pstart:pend]
 	else:
-		results = Context.objects.all()
+		results = Context.objects.filter(visible=True)
 
 	return render_to_response('basic/vocabularies.html', locals())
 
