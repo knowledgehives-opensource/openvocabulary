@@ -42,9 +42,9 @@ urlpatterns = patterns('ov_django.ov.views',
 	(r'vocabularies[/]?$', 'list_vocabularies'),
 	(r'vocabularies/search$', 'search_concepts'),
 	(r'vocabularies/lookup$', 'lookup_concept'),
-	(r'html/(?P<path>(?:taxonomies|thesauri)[/].+)$', 'lookup_concept'),
-	(r'data/(?P<path>(?:taxonomies|thesauri)[/].+)', 'rdfdata'),
-	(r'(?P<path>(?:taxonomies|thesauri)[/].+)', 'redirect'),
+	(r'html/(?P<path>(?:taxonomies|thesauri|industries)[/].+)$', 'lookup_concept'),
+	(r'data/(?P<path>(?:taxonomies|thesauri|industries)[/].+)', 'rdfdata'),
+	(r'(?P<path>(?:taxonomies|thesauri|industries)[/].+)', 'redirect'),
 )
 
 class CsrfExemptResource(Resource):
