@@ -17,6 +17,7 @@ from ov_django.ov.models import Entry, Context
 class EntryIndex(SearchIndex):
     text = CharField(document=True, use_template=True)
     label = CharField(use_template=True)
+    context = CharField(use_template=True)
 #    rendered = CharField(use_template=True, indexed=False)
 #    def get_queryset(self):
 #        """Used when the entire index for model is updated."""
