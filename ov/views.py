@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from haystack.query import SearchQuerySet
 import re
 from exceptions import NotImplementedError
 
@@ -66,14 +67,10 @@ def search_concepts(request):
 	"""
 	from haystack.views import SearchView
 	state = "search"
-	return SearchView(template='search/search.html')(request)
-	# query = request.GET.get('q', '')
-	# label = request.GET.get('label', '')
-	# size  = request.GET.get('size', 5)
-	# threshold = request.GET.get('threshold', 0.5)
-	# results = Entry.objects.search(query) if query != '' else []
-	# site_name = request.get_host()
-	# return render_to_response('basic/search.html', locals())#, mimetype="application/xhtml+xml")
+	sqs = SearchQuerySet().filter(context='mila')
+	return SearchView(template='search/search.html', searchqueryset=sqs)(request)
+
+
 
 def lookup_concept(request, path=None):
 	"""
