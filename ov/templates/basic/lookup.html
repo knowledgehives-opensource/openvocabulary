@@ -93,6 +93,12 @@
 					<td>{{ meaning|create_entry_anchor:'Show relation' }}</td>
 					</tr>
 				{% endfor %}
+				{% if entry.type_tag %}
+				<tr>
+					<td>term level</td>
+					<td>{{ entry.type_tag|create_word_type_anchor:'Show term level' }}</td>
+				</tr>
+				{% endif %}
 				{% for word in entry.words.all %}
 					{% if forloop.first %}
 					<tr><td rowspan="{{ entry.words.all|length }}">related&nbsp;words:</td>

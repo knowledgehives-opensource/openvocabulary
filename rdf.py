@@ -5,6 +5,7 @@ import uuid
 
 from django.db import models
 from django.db.models.query import QuerySet
+import types
 
 """
 Namespaces recognized by this package
@@ -173,28 +174,29 @@ class RdfConcept(object):
 	def get_class(self):
 		return self.__class__
 
-	"""
-	Return the name of the (Python) class of this object
-	"""
 	def get_class_name(self):
+		"""
+		Return the name of the (Python) class of this object
+		"""
 		return self.__class__.__name__
 
-	"""
-	Converts an array of objects to a list compatible with RDF
-	"""
 	def objects_as_rdf_list(self, objects):
-		n = len(objects)
-		if n == 0:
+		"""
+		Converts an array of objects to a list compatible with RDF
+		"""
+		is_list = type(objects) == types.ListType
+		n = len(objects) if is_list else 1
+		if not n:
 			raise ValueError("Cannot list empty array or non-array")
 		elif n == 1:
-			return self.object_to_string(objects[0])
+			return self.object_to_string(objects[0] if is_list else objects)
 		else:
 			return ", ".join("%s" % self.object_to_string(v) for v in objects ) # -- I love the power of Python :)
 
-	"""
-	Convert arbitrary object to RDF compatible representation "literal", <resource>
-	"""
 	def object_to_string(self, obj):
+		"""
+		Convert arbitrary object to RDF compatible representation "literal", <resource>
+		"""
 		if hasattr(obj, "get_uri"):
 			return self.to_uri(obj.get_uri())
 		elif isinstance(obj, (list, tuple, QuerySet)):
@@ -204,11 +206,10 @@ class RdfConcept(object):
 		else:
 			return None
 
-	"""
-	Returns value for given property using this property as given, or mathing property or callable function from rdf spec
-
-	"""
 	def get_property_value(self, prop, rdfprops):
+		"""
+		Returns value for given property using this property as given, or mathing property or callable function from rdf spec
+		"""
 		if "property" in rdfprops and hasattr(self, rdfprops["property"]):
 			if callable(eval("self."+rdfprops["property"])):
 				dbval = eval("self."+rdfprops["property"]+"()")
@@ -219,10 +220,10 @@ class RdfConcept(object):
 
 		return dbval
 
-	"""
-	returns value by given property
-	"""
 	def get_value(self, prop):
+		"""
+		returns value by given property
+		"""
 		val = None
 		if hasattr(self, prop) and callable(eval("self."+prop)):
 			val = eval("self."+prop+"()")
@@ -230,10 +231,10 @@ class RdfConcept(object):
 			val = getattr(self, prop)
 		return val
 
-	"""
-	Converts to string information based on the property information
-	"""
 	def property_to_string(self, prop):
+		"""
+		Converts to string information based on the property information
+		"""
 		if prop is None:
 			return prop
 

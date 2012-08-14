@@ -29,20 +29,20 @@ class ContextManager(models.Manager):
 		print "Found %d results for %s" % (len(results), key)
 		return results
 
-	"""
-	Lookup manifests by isbn
-	"""
 	def lookup(self, value):
+		"""
+		Lookup manifests by isbn
+		"""
 		try:
 			result = Context.objects.get(uri=value)
 		except Exception:
 			result = None
 		return result
 
-	"""
-	Returns a set of distinctive languages
-	"""
 	def get_langs(self):
+		"""
+		Returns a set of distinctive languages
+		"""
 #		cursor = connection.cursor()
 #		cursor.execute("""
 #			SELECT DISTINCT lang
@@ -50,16 +50,16 @@ class ContextManager(models.Manager):
 		langs = Context.objects.filter(visible=True).values('lang').distinct(True).order_by()
 		return [lang['lang'] for lang in langs]
 
-"""
-Simple class for storing tags
-"""
 class Tag(models.Model):
+	"""
+	Simple class for storing tags
+	"""
 	label = models.CharField(max_length=50, db_index=True, unique=True)
 
-"""
-Represents the dictionary
-"""    
 class Context(models.Model, RdfClass):
+	"""
+	Represents the dictionary
+	"""
 	label = models.CharField(max_length=255)
 	description = models.TextField(blank=True, null=True)
 	info = models.TextField(blank=True, null=True)
@@ -74,31 +74,31 @@ class Context(models.Model, RdfClass):
 	# tree_properties
 	objects = ContextManager()
 
-	"""
-	to-string representation
-	"""
 	def __unicode__(self):
+		"""
+		to-string representation
+		"""
 		return "%s [%s]" % (self.label, self.uri)
 
-	'''
-	Returns roots of this context
-	'''
 	def get_root_entries(self):
+		"""
+		Returns roots of this context
+		"""
 		return Entry.objects.filter(is_root=True, context=self)
 
-	"""
-	Django meta information
-	"""
 	class Meta:
+		"""
+		Django meta information
+		"""
 		ordering = ['label']
 
 
 	# -------- RdfClass --------
 
-	"""
-	Metainformation for RDF output
-	"""
 	def rdfMeta(self):
+		"""
+		Metainformation for RDF output
+		"""
 		return {
 			'label' 		: {'uri' : [ RdfURI('skos:prefLabel'), RdfURI('dcel:title') ] },
 			'description' : {'uri' : [ RdfURI('v:description'), RdfURI('dcel:description'), RdfURI('rev:text'), RdfURI('bibtex:abstract') ] },
@@ -107,16 +107,16 @@ class Context(models.Model, RdfClass):
 			'tags' 		: {'uri' : ['skos:topic', 'dcel:subject'] },
 			  }
 
-	"""
-	Override RdfClass default uri implementation
-	"""
 	def get_uri(self):
+		"""
+		Override RdfClass default uri implementation
+		"""
 		return self.uri
 
-	"""
-	Override RdfClass default rdf:type listing
-	"""
 	def get_rdf_types(self):
+		"""
+		Override RdfClass default rdf:type listing
+		"""
 		return [ RdfURI('skos:ConceptScheme') ]
 
 
@@ -160,10 +160,10 @@ class URIManager(models.Manager):
 			result = None
 		return result
 
-"""
-Represents an arbitrary URI
-"""    
 class URI(models.Model):
+	"""
+	Represents an arbitrary URI
+	"""
 	uri = models.URLField(max_length=255, verify_exists=False, db_index=True, unique=True)
 	label = models.CharField(max_length=100, null=True, blank=True)
 	objects = URIManager()
@@ -171,10 +171,10 @@ class URI(models.Model):
 	def get_uri(self):
 		return self.uri
 
-	"""
-	to-string representation
-	"""
 	def __unicode__(self):
+		"""
+		to-string representation
+		"""
 		if self.label:
 			return "%s <%s>" % (self.label, self.uri)
 		else:
@@ -192,28 +192,28 @@ class PredicateManager(models.Manager):
 		print "Found %d results for %s" % (len(results), key)
 		return results
 
-	"""
-	Lookup manifests by isbn
-	"""
 	def lookup(self, value):
+		"""
+		Lookup manifests by isbn
+		"""
 		try:
 			result = Predicate.objects.get(uri=value)
 		except Exception:
 			result = None
 		return result
 
-"""
-Represents an arbitrary URI
-"""    
 class Predicate(models.Model):
+	"""
+	Represents an arbitrary URI
+	"""
 	uri = models.URLField(max_length=255, verify_exists=True, db_index=True, unique=True)
 	label = models.CharField(max_length=100, null=True, blank=True)
 	objects = PredicateManager()
 
-	"""
-	to-string representation
-	"""
 	def __unicode__(self):
+		"""
+		to-string representation
+		"""
 		if self.label:
 			return "%s <%s>" % (self.label, self.uri)
 		else:
@@ -362,6 +362,9 @@ class Entry(models.Model, RdfClass):
 		                                         predicate__uri=prop)
 												.order_by("predicate")]
 
+	def are_related(self, prop="http://www.w3.org/2004/02/skos/core#related"):
+		return Triple.objects.filter(subject=self, predicate__uri=prop).count()
+
 
 	def get_description(self):
 		if self.description:
@@ -395,7 +398,7 @@ class Entry(models.Model, RdfClass):
 		    'in_synset'     : {'uri' : 'wn20schema:inSynset'},
 		    'parent'        : {'uri' : [ RdfURI('skos:broader') ]},
 		    'childOf'       : {'uri' : [ RdfURI('skos:narrower')]},
-		    'list_related'  : {'uri' : 'skos:related'},
+		    'list_related'  : {'uri' : 'skos:related', 'condition': ('are_related', True)},
 			#'is_root' 	: {'uri' : 'dcel:language' },
 			#'relations' 	: {'uri' : 'skos:inScheme' },
 			#'meanings' 	: {'uri' : 'skos:inScheme' },

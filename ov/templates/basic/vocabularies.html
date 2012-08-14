@@ -5,7 +5,7 @@
 
 {% block page_content %}
 	{% for ctx in results  %}
-	<div id="unique-entry-id-{{ forloop.counter0 }}" class="blog-entry">
+		<div id="unique-entry-id-{{ forloop.counter0 }}" class="blog-entry" xmlns="http://www.w3.org/1999/html">
 		<h1 class="blog-entry-title"><a href="/vocabularies?uri={{ ctx.uri }}" class="blog-permalink">{{ ctx.label }}</a></h1>
 		<div class="blog-entry-date">Type: <span class="blog-entry-category"><a href="/vocabularies?type={{ ctx.type }}">{{ ctx.type|expand_context_type }}</a></span></div>
 		<div class="blog-entry-date">Language: <span class="blog-entry-category"><a href="/vocabularies?lang={{ ctx.lang }}">{{ ctx.lang }}</a></span></div>
@@ -16,7 +16,7 @@
 		</p>
 		<div class="blog-entry-body">
 			{% autoescape off %}{{ ctx.description }}{% endautoescape %}
-			{% if ctx.get_root_entries %}
+			{% if not show_all and ctx.get_root_entries %}
 				{% if ctx.roots %}
 				<p style="padding-top: 2em;">
 				{% if ctx.type == 'tez' %}

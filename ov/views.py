@@ -5,7 +5,6 @@ import re
 from exceptions import NotImplementedError
 
 from django.template.loader import get_template
-from django.template import Context
 from django.http import HttpResponse, Http404, HttpResponseNotFound
 from django.shortcuts import render_to_response
 from django.db.models import Q
@@ -40,6 +39,7 @@ def list_vocabularies(request):
 	tags = Tag.objects.values_list('label', flat=True)
 
 	results = None
+	show_all=False
 	if tag:
 		results = Context.objects.filter(tags__label__exact=tag)
 	elif type:
@@ -57,6 +57,7 @@ def list_vocabularies(request):
 		for result in results:
 			result.roots = result.get_root_entries()[pstart:pend]
 	else:
+		show_all=True
 		results = Context.objects.filter(visible=True)
 
 	return render_to_response('basic/vocabularies.html', locals())
