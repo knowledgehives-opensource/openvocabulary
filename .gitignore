@@ -6,3 +6,5 @@ atlassian-ide-plugin.xml
 ontology.swoop
 ontology.swp
 trbc.dump.sql
+error.log
+ontology.nt
