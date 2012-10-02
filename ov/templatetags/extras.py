@@ -118,24 +118,17 @@ def check_if_selected(value, current):
 
 @register.simple_tag
 def count_by_type(value):
-	"""
-	Counts contexts of given type
-	"""
-	return str(len(Context.objects.filter(type=value)))
+    """
+    Counts contexts of given type
+    """
+    return str(Context.objects.filter(visible=True, type=value).count())
 
 @register.simple_tag
 def count_by_lang(value):
-	"""
-	Counts contexts of given lang
-	"""
-	return str(len(Context.objects.get_langs()))
-
-@register.simple_tag
-def count_by_tag(value):
-	"""
-	Counts contexts of given tag
-	"""
-	return str(len(Context.objects.filter(tags__label__exact=value)))
+    """
+    Counts contexts of given lang
+    """
+    return str(Context.objects.filter(visible=True, lang=value).count())
 
 @register.filter
 def expand_context_type(value):

@@ -55,6 +55,7 @@ class Tag(models.Model):
 	Simple class for storing tags
 	"""
 	label = models.CharField(max_length=50, db_index=True, unique=True)
+	usages = models.IntegerField(null=False, default=0)
 
 class Context(models.Model, RdfClass):
 	"""
