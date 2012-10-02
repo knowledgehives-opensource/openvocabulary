@@ -6,10 +6,10 @@ from exceptions import NotImplementedError
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse, Http404, HttpResponseNotFound
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Q
 from django.core import serializers
-
+from django.core.paginator import Paginator
 
 from ov_django.settings import BASE_URL_PATH, BASE_OV_PATH
 from ov_django.ov.models import *
@@ -46,15 +46,18 @@ def list_vocabularies(request):
 	elif lang:
 		results = Context.objects.filter(lang=lang)
 	elif uri:
-		results = Context.objects.filter(uri=uri)
-		page = int(request.GET.get('page', 0))
-		pstart = 10*page
-		pend = 10*(page+1)-1
-		pagep1 = page+1
-		pagem1 = page-1
-		pten = 10*(page+1)
-		for result in results:
-			result.roots = result.get_root_entries()[pstart:pend]
+		context = get_object_or_404(Context, uri=uri)
+		paginator = Paginator(context.get_root_entries(), 10)
+		try:
+			page = int(request.GET.get('page', 1))
+		except ValueError:
+			page = 1
+		try:
+			roots = paginator.page(page)
+		except (EmptyPage, InvalidPage):
+			roots = paginator.page(paginator.num_pages)
+		context.roots = roots.object_list
+		results = [context]
 	else:
 		results = Context.objects.filter(visible=True)
 
