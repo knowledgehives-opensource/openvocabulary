@@ -55,6 +55,7 @@ Simple class for storing tags
 """
 class Tag(models.Model):
 	label = models.CharField(max_length=50, db_index=True, unique=True)
+	usages = models.IntegerField(null=False, default=0)
 
 """
 Represents the dictionary

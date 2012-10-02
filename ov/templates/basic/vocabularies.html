@@ -69,7 +69,7 @@
 	<ul class="blog-tag-cloud">
 		{# list tags #}
 		{% for tag in tags %}
-			<li><a href="/vocabularies?tag={{ tag }}" title="Filter by tag: {{ tag }}" class="blog-tag-size-{% count_by_tag tag %}" rel="tag">{{ tag }}</a></li>
+        <li><a href="/vocabularies?tag={{ tag.label }}" title="Filter by tag: {{ tag.label }}" class="blog-tag-size-{{ tag.usages }}" rel="tag">{{ tag.label }}</a></li>
 		{% endfor %}
 		{# list languages #}
 		{% for lang in langs %}

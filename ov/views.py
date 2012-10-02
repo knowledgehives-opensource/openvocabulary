@@ -36,7 +36,7 @@ def list_vocabularies(request):
 	uri = request.GET.get('uri', None)
 
 	langs = Context.objects.get_langs()
-	tags = Tag.objects.values_list('label', flat=True)
+	tags = Tag.objects.all()
 
 	results = None
 	if tag:
