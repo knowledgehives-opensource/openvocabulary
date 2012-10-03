@@ -24,23 +24,23 @@
                     The top level concepts are (click to browse): 
                 {% endif %}
                 <ul class="disc">
-                    {% for entry in ctx.roots  %}
+                    {% for entry in ctx.roots.object_list  %}
                         <li><a href="{{ entry.uri }}" rel="self">{{ entry.label }}</a>{% if not entry|is_native_ov  %} [<a href="/vocabularies/lookup?uri={{ entry.uri }}" rel="self">browse in OV</a>]{% endif %}</li>
                     {% endfor %}
 				</ul>
-				{% if paginator %}
+				{% if ctx.roots.paginator %}
 					<div>
 					[
-					{% if roots.has_previous %}
-						<a href="/vocabularies?uri={{ uri }}&page={{ roots.previous_page_number }}">Previous</a>
+					{% if ctx.roots.has_previous %}
+						<a href="/vocabularies?uri={{ uri }}&page={{ ctx.roots.previous_page_number }}">Previous</a>
 					{% else %}
 						Previous
 					{% endif %}
 					]
-					Page {{	roots.number }} of {{ roots.paginator.num_pages }}
+					Page {{ ctx.roots.number }} of {{ ctx.roots.paginator.num_pages }}
 					[
-			        {% if roots.has_next %}
-						<a href="/vocabularies?uri={{ uri }}&page={{ roots.next_page_number }}">Next</a>
+			        {% if ctx.roots.has_next %}
+						<a href="/vocabularies?uri={{ uri }}&page={{ ctx.roots.next_page_number }}">Next</a>
 					{% else %}
 						Next
 					{% endif %}
