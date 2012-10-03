@@ -25,6 +25,28 @@ def welcome(request):
 	state = "welcome"
 	return render_to_response('basic/welcome.html', locals())
 
+def setup_context_roots_page(context, page):
+	"""
+	Sets roots property for given context. Roots will span only selected page.
+	Context will be modified!
+	"""
+	paginator = Paginator(context.get_root_entries(), 10)
+	try:
+		roots = paginator.page(page)
+	except (EmptyPage, InvalidPage):
+		roots = paginator.page(paginator.num_pages)
+	context.roots = roots#.object_list
+
+def get_page(request):
+	"""
+	Gets page number from request GET params. If not found defaults to 1.
+	"""
+	try:
+		page = int(request.GET.get('page', 1))
+	except ValueError:
+		page = 1
+	return page
+
 def list_vocabularies(request):
 	"""
 	List/filter vocabularies
@@ -47,16 +69,7 @@ def list_vocabularies(request):
 		results = Context.objects.filter(lang=lang)
 	elif uri:
 		context = get_object_or_404(Context, uri=uri)
-		paginator = Paginator(context.get_root_entries(), 10)
-		try:
-			page = int(request.GET.get('page', 1))
-		except ValueError:
-			page = 1
-		try:
-			roots = paginator.page(page)
-		except (EmptyPage, InvalidPage):
-			roots = paginator.page(paginator.num_pages)
-		context.roots = roots.object_list
+		setup_context_roots_page(context, get_page(request))
 		results = [context]
 	else:
 		results = Context.objects.filter(visible=True)
@@ -82,23 +95,45 @@ def lookup_concept(request, path=None):
 	"""
 	Concepts lookup
 	"""
-	state = "lookup"
+	# 1. check if it's a context
+	# if so, display as vocabulary
+	# 2. check it it's an entry
+	# if so, display as an entry
+
 	accept = request.META.get("HTTP_ACCEPT", "")
 	entry = None
 	if path:
 		uri = BASE_OV_PATH + path
 	else:
 		uri = request.GET.get('uri', None)
+	print "URI: %s" % uri
 	if uri:
-		entry = Entry.objects.lookup(uri)
-	site_name = request.get_host()
-
-	needsrdf = re.match("^.*application/x-turtle.*$", accept)
-	if needsrdf:
-		return HttpResponse(entry.to_rdf(), mimetype="application/x-turtle")
-	#else
-	return render_to_response('basic/lookup.html', locals())#, mimetype="application/xhtml+xml")
-
+		# add trailing slash
+		if uri[-1] <> '/':
+			uri = uri + '/'
+		contexts = Context.objects.filter(Q(uri=uri) | Q(uri=uri[:-1]))
+		if len(contexts) > 0:
+			context = contexts[0]
+			setup_context_roots_page(context, get_page(request))
+			return render_to_response('basic/vocabularies.html', {
+				'results': [context],
+				'langs': Context.objects.get_langs(),
+				'tags': Tag.objects.all(),
+				})
+		else:
+			# no conexts found, try entries
+			entries = Entry.objects.filter(Q(uri=uri) | Q(uri=uri[:-1]))
+			if len(entries) > 0:
+				entry = entries[0]
+				print "Entry:", entry
+				needsrdf = re.match("^.*application/x-turtle.*$", accept)
+				if needsrdf:
+					return HttpResponse(entry.to_rdf(), mimetype="application/x-turtle")
+				else:
+					return render_to_response('basic/lookup.html', locals())#, mimetype="application/xhtml+xml")
+			else:
+				# no entries found
+				return HttpResponseNotFound()
 
 def redirect(request, path):
 	"""
