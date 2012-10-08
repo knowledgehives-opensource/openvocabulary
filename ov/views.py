@@ -119,6 +119,7 @@ def lookup_concept(request, path=None):
 				'results': [context],
 				'langs': Context.objects.get_langs(),
 				'tags': Tag.objects.all(),
+				'uri': uri,
 				})
 		else:
 			# no conexts found, try entries
