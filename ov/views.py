@@ -132,6 +132,7 @@ def lookup_concept(request, path=None):
 			else:
 				# no entries found
 				return HttpResponseNotFound()
+	return render_to_response('basic/lookup.html', locals())#, mimetype="application/xhtml+xml")
 
 def redirect(request, path):
 	"""
