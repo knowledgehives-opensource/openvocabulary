@@ -25,7 +25,13 @@
                 {% endif %}
                 <ul class="disc">
                     {% for entry in ctx.roots.object_list  %}
-                        <li><a href="{{ entry.uri }}" rel="self">{{ entry.label }}</a>{% if not entry|is_native_ov  %} [<a href="/vocabularies/lookup?uri={{ entry.uri }}" rel="self">browse in OV</a>]{% endif %}</li>
+                    <li><a href="{{ entry.uri }}" rel="self">
+                    {% if entry.label %}
+                        {{ entry.label }}
+                     {% else %}
+                         {{ entry.lexical_form }}
+                    {% endif %}
+                    </a>{% if not entry|is_native_ov  %} [<a href="/vocabularies/lookup?uri={{ entry.uri }}" rel="self">browse in OV</a>]{% endif %}</li>
                     {% endfor %}
 				</ul>
 				{% if ctx.roots.paginator %}
