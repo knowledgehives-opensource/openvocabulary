@@ -257,6 +257,7 @@ ENTRY_RELATION_TYPES = (
 	('classifiedByRegion', 'classified by region'),
 	('classifiedByTopic', 'classified by topic'),
 	('classifiedByUsage', 'classified by usage'),
+	('exact_match', 'exact match'),
 )
 DICT_ENTRY_RELATION_TYPES = dict(ENTRY_RELATION_TYPES)
 
