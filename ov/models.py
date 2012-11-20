@@ -55,6 +55,7 @@ Simple class for storing tags
 """
 class Tag(models.Model):
 	label = models.CharField(max_length=50, db_index=True, unique=True)
+	usages = models.IntegerField(null=False, default=0)
 
 """
 Represents the dictionary
@@ -256,6 +257,7 @@ ENTRY_RELATION_TYPES = (
 	('classifiedByRegion', 'classified by region'),
 	('classifiedByTopic', 'classified by topic'),
 	('classifiedByUsage', 'classified by usage'),
+	('exact_match', 'exact match'),
 )
 DICT_ENTRY_RELATION_TYPES = dict(ENTRY_RELATION_TYPES)
 

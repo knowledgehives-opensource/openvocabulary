@@ -89,6 +89,7 @@ class TriplesParser:
 		'http://dmoz.org/rdf/symbolic'                  : 'synonym',
 		'http://dmoz.org/rdf/symbolic1'                 : 'synonym',
 		'http://dmoz.org/rdf/symbolic2'                 : 'synonym',
+		'http://www.w3.org/2004/02/skos/core#exactMatch': 'exact_match',
 		'http://www.w3.org/2004/02/skos/core#related'   : 'similarTo',
 		'http://www.w3.org/2006/03/wn/wn20/schema/similarTo' : 'similarTo',
 		'http://www.w3.org/2006/03/wn/wn20/schema/hyponymOf' : 'hypernym',
@@ -225,7 +226,10 @@ class TriplesParser:
 					print "[INFO] importing next %d lines [%d, %d]" % (size, i, now_date - date)
 					date = now_date
 		# update is_root column to 1 for all root entries:
-		for (orphan,) in Entry.objects.all().filter(types__uri="http://www.w3.org/2006/03/wn/wn20/schema/Synset").filter(parent__isnull=True).values_list("id"):
+		for (orphan,) in Entry.objects\
+				.filter(types__uri__regex=r"http://www\.w3\.org/2006/03/wn/wn20/schema/(Noun|Verb|Adverb|Adjective)?Synset")\
+				.filter(parent__isnull=True)\
+				.values_list("id"):
 			if Entry.objects.filter(parent__id=orphan):
 				Entry.objects.filter(id=orphan).update(is_root=1)
 
