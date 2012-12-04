@@ -34,7 +34,7 @@
 #for more information
 
 from piston.handler import BaseHandler
-from ov_django.ov.models import Entry, EntryReference
+from vocab.ov.models import Entry, EntryReference
 from django.db.models.query_utils import Q
 from django.http import HttpResponse
 import simplejson as json

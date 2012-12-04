@@ -11,20 +11,19 @@ Copyright (c)  Knowledge Hives sp. z o.o.. All rights reserved.
 import sys
 import gc
 import re
-import getopt
 import time
 import datetime
 
 from django.core.management import setup_environ
-import settings
+from vocab import settings
+
 settings.DEBUG = False
 setup_environ(settings)
 
 from django.db import connection
 assert not connection.queries, 'settings.DEBUG=True?'
 
-from ov.models import *
-from ov.importer import *
+from vocab.ov.models import *
 
 name_pat = re.compile(r"^(?:.+)[/](?P<label>[^/]+)[/]?$")
 words_pat = re.compile(r"^(?:[A-Z][a-z]+){2,}$")

@@ -2,9 +2,9 @@ import re
 
 from django import template
 from django.utils.safestring import mark_safe
-from ov_django.ov.models import *
-from ov_django.rdf import NAMESPACES, INV_NAMESPACE
-from ov_django.settings import BASE_OV_PATH, BASE_URL_PATH
+from vocab.ov.models import *
+from vocab.rdf import NAMESPACES, INV_NAMESPACE
+from vocab.settings import BASE_OV_PATH, BASE_URL_PATH
 
 register = template.Library()
 

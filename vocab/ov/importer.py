@@ -17,7 +17,7 @@ import time
 import datetime
 import fileinput
 from django import db
-from ov_django.ov.models import *
+from vocab.ov.models import *
 from django.utils.encoding import smart_unicode
 
 """

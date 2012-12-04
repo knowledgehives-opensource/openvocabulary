@@ -11,8 +11,8 @@ from django.db.models import Q
 from django.core import serializers
 from django.core.paginator import Paginator
 
-from ov_django.settings import BASE_URL_PATH, BASE_OV_PATH
-from ov_django.ov.models import *
+from vocab.settings import BASE_URL_PATH, BASE_OV_PATH
+from vocab.ov.models import *
 from ov_django import settings
 from simplejson import dumps
 

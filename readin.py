@@ -13,13 +13,13 @@ import gc
 import getopt
 
 from django.core.management import setup_environ
-import settings
+from vocab import settings
 
 settings.DEBUG = False
 
 setup_environ(settings)
 
-from ov.importer import *
+from vocab.ov.importer import *
 
 
 help_message = '''

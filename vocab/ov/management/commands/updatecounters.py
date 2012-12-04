@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from ov_django.ov.models import Context, Tag
+from vocab.ov.models import Context, Tag
 
 class Command(BaseCommand):
     help = "Updates tag usage counters"

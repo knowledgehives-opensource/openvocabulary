@@ -10,8 +10,8 @@ Copyright (c)  Knowledge Hives sp. z o.o.. All rights reserved.
 
 from django.db import models
 from django.contrib import admin
-from ov_django.rdf import RdfClass
-from ov_django.rdf import URI as RdfURI
+from vocab.rdf import RdfClass
+from vocab.rdf import URI as RdfURI
 
 # --------------------- context -----------------------------    
 

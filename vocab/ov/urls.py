@@ -35,9 +35,9 @@
 
 from django.conf.urls.defaults import *
 from piston.resource import Resource
-from ov_django.ov.handlers import *
+from vocab.ov.handlers import *
 
-urlpatterns = patterns('ov_django.ov.views',
+urlpatterns = patterns('vocab.ov.views',
 	(r'^$', 'welcome'),
 	(r'vocabularies[/]?$', 'list_vocabularies'),
 	(r'vocabularies/search$', 'search_concepts'),

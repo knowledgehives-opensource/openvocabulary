@@ -77,7 +77,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'ov_django.urls'
+ROOT_URLCONF = 'vocab.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -93,7 +93,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
-    'ov_django.ov',
+    'vocab.ov',
     'haystack',
 )
 
@@ -106,7 +106,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # ----------------- haystack configuration --------------
 
-HAYSTACK_SITECONF = 'ov_django.search_sites'
+HAYSTACK_SITECONF = 'vocab.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'solr'
 HAYSTACK_WHOOSH_PATH = os.path.join(os.path.dirname(__file__), 'index').replace('\\','/'),
 HAYSTACK_SOLR_URL = 'http://localhost:8983/solr'

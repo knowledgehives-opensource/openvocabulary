@@ -11,7 +11,7 @@ Copyright (c)  Knowledge Hives sp. z o.o.. All rights reserved.
 import datetime
 from haystack.indexes import *
 from haystack import site
-from ov_django.ov.models import Entry, Context
+from vocab.ov.models import Entry, Context
 
 
 class EntryIndex(SearchIndex):
