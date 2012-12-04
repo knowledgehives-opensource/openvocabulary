@@ -187,8 +187,8 @@ class TriplesParser:
 							 \s+
 							 (?:(?:[<](?P<obj_uri>[^>]+)[>])|    # object uri
 								(?:["'](?P<obj_lit>.+)['"]      # object literal
-								   (?:[@](?P<obj_lang>.+))?   # object literal lang tag
-								   (?:\^\^(?P<obj_type>.+))?))  # object literal type
+								   (?:[@](?P<obj_lang>.+\b))?   # object literal lang tag
+								   (?:\^\^(?P<obj_type>.+\b))?))  # object literal type
 							 \s*[.]\s*$
 							 """, re.X)
 
@@ -280,7 +280,7 @@ class TriplesParser:
 				if daction in self._literal_actions:
 					literal = self._get_literal(obj)
 					if literal:
-						processed = self.set_literal(entry, self._literal_actions[daction], literal)
+						processed = self.set_literal(entry, self._literal_actions[daction], literal, lang=obj['lang'])
 				# is it a uri predicate ?
 				elif daction in self._uri_actions:
 					uri = self._get_uri(obj)
@@ -420,17 +420,18 @@ class TriplesParser:
 				setattr(entry, pred, oentry)
 			return True
 
-		print "[WARNING] cannot add entry  <%s> %s <%s> | %s " % (entry.uri, pred, oentry.uri, str(uriPred))
+		print "[WARNING] cannot add entry  <%s> %s <%s>" % (entry.uri, pred, oentry.uri)
 		return False
 
 
-	def set_literal(self, entry, pred, literal):
+	def set_literal(self, entry, pred, literal, lang='en'):
 		"""
 		Allows to set literal of given property in Entry
 		"""
 		if hasattr(entry, pred) and literal:
-			# fallback to normal literal predicate set
-			setattr(entry, pred, literal)
+			if lang == 'en' or not getattr(entry, pred):
+				# fallback to normal literal predicate set
+				setattr(entry, pred, literal)
 			return True
 
 		print "[WARNING] cannot set literal (%s, %s)" % (entry.uri, pred)
@@ -446,9 +447,14 @@ class TriplesParser:
 		utype = None
 
 		if 'pred' in obj and obj['pred']:
-			upred, created = Predicate.objects.get_or_create(uri=obj['pred'])
-			if created:
-				upred.save()
+			try:
+				upred, created = Predicate.objects.get_or_create(uri=obj['pred'])
+				if created:
+					upred.save()
+			except Exception, e:
+				print "URI: %s" % obj['pred']
+				print e
+
 		else:
 			print "[WARNING] cannot set triple without proper predicate"
 			return False
@@ -499,9 +505,13 @@ class TriplesParser:
 		"""
 		if 'uri' in obj and obj['uri']:
 			ouri = self._encode(obj['uri'])
-			uri, created = URI.objects.get_or_create(uri=ouri) #lookup(ouri)
-			if created:
-				uri.save()
+			try:
+				uri, created = URI.objects.get_or_create(uri=ouri) #lookup(ouri)
+				if created:
+					uri.save()
+			except Exception, e:
+				print "URI: %s"%ouri
+				print e
 
 			return uri
 
