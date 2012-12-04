@@ -47,7 +47,7 @@ class ContextManager(models.Manager):
 #		cursor.execute("""
 #			SELECT DISTINCT lang
 #			FROM ov_context""")
-		langs = Context.objects.filter(visible=True).values('lang').distinct(True).order_by()
+		langs = Context.objects.filter(visible=True).values('lang').distinct().order_by()
 		return [lang['lang'] for lang in langs]
 
 """

@@ -9,11 +9,11 @@ from django.http import HttpResponse, Http404, HttpResponseNotFound
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Q
 from django.core import serializers
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 from vocab.settings import BASE_URL_PATH, BASE_OV_PATH
 from vocab.ov.models import *
-from ov_django import settings
+from django.conf import settings
 from simplejson import dumps
 
 
@@ -51,12 +51,12 @@ def list_vocabularies(request):
 	"""
 	List/filter vocabularies
 	"""
-	state = "vocabularies"
 	tag = request.GET.get('tag', None)
 	type = request.GET.get('type', None)
 	lang = request.GET.get('lang', None)
 	uri = request.GET.get('uri', None)
 
+	state = "vocabularies"
 	langs = Context.objects.get_langs()
 	tags = Tag.objects.all()
 
@@ -99,6 +99,7 @@ def lookup_concept(request, path=None):
 	# if so, display as vocabulary
 	# 2. check it it's an entry
 	# if so, display as an entry
+	state = "vocabularies"
 
 	accept = request.META.get("HTTP_ACCEPT", "")
 	entry = None
